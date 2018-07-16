@@ -389,5 +389,8 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
 
+# Third-Party Folder
+skia/
+
 
 # End of https://www.gitignore.io/api/c++,windows,visualstudio

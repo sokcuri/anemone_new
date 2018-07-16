@@ -73,16 +73,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\skia\include;D:\skia\include\atlastext;D:\skia\include\c;D:\skia\include\codec;D:\skia\include\config;D:\skia\include\core;D:\skia\include\effects;D:\skia\include\encode;D:\skia\include\gpu;D:\skia\include\pathops;D:\skia\include\ports;D:\skia\include\private;D:\skia\include\svg;D:\skia\include\utils;D:\skia\include\views;D:\skia\src\core</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\skia\out\Static;</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\skia\include;D:\skia\include\atlastext;D:\skia\include\c;D:\skia\include\codec;D:\skia\include\config;D:\skia\include\core;D:\skia\include\effects;D:\skia\include\encode;D:\skia\include\gpu;D:\skia\include\pathops;D:\skia\include\ports;D:\skia\include\private;D:\skia\include\svg;D:\skia\include\utils;D:\skia\include\views;D:\skia\src\core</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\skia\out\Static;</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
