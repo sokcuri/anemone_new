@@ -10,11 +10,16 @@ namespace LayeredWnd
 	UINT latest_evt;
 	bool bMinimizeClk = false;
 	bool bCloseClk = false;
+	HWND m_hMenuWnd;
 	HHOOK m_hCBTHook;
 	HHOOK m_hMouseHook;
-	HWND m_hMenuWnd;
+	HHOOK m_hKeyboardHook;
+
 	HANDLE m_hMHThread;
 	HANDLE m_hDrawThread;
+	HANDLE m_hKHThread;
+
+	int m_nMode;
 
 	LRESULT CALLBACK DlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
@@ -22,6 +27,12 @@ namespace LayeredWnd
 		{
 		case WM_CREATE:
 		{
+			strBuff = L"날이 너무 덥다..";
+			vecBuff.clear();
+			n_selLine = -1;
+
+			m_nMode = reinterpret_cast<int>(((LPCREATESTRUCT)lParam)->lpCreateParams);
+			
 			DWORD dwThreadID = NULL;
 
 			m_hMHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
@@ -94,8 +105,6 @@ namespace LayeredWnd
 							else if ((int)(256 * progress) == 0) continue;
 							else guide_opacity = (int)(256 * progress);
 							SendMessage(hWnd, WM_PAINT, 0, 0);
-
-							OutputDebugString(L"A");
 						}
 					}
 					else if (guide_opacity != 1)
@@ -115,18 +124,114 @@ namespace LayeredWnd
 							else if ((int)(256 * progress) == 0) continue;
 							else guide_opacity = (int)(256 * progress);
 							SendMessage(hWnd, WM_PAINT, 0, 0);
-
-							OutputDebugString(L"B");
 						}
 					}
 					else Sleep(10);
 				}
-				OutputDebugString(L"C");
 				return 0;
 			}, (void *)hWnd, 0, (unsigned*)&dwThreadID);
 
 			if (m_hDrawThread == 0) MessageBox(0, L"DrawThread Error\n", 0, 0);
 
+			m_hKHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
+				static HWND m_hWnd;
+				m_hWnd = (HWND)pData;
+				m_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
+				{
+					if (nCode >= 0)
+					{
+						PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
+
+						switch (wParam)
+						{
+						case 256:	// WM_KEYDOWN
+						case 260:	// WM_SYSKEYDOWN
+							if (pHookKey->vkCode == VK_NUMPAD9)
+							{
+								if (m_nMode == ID_CAPTIONMODE)
+								{
+									if (!n_selLine) break;
+									strBuff = vecBuff[--n_selLine];
+									SendMessage(m_hWnd, WM_PAINT, 0, 0);
+								}
+							}
+							else if (pHookKey->vkCode == VK_NUMPAD3)
+							{
+								if (m_nMode == ID_CAPTIONMODE)
+								{
+									if (n_selLine + 1 == vecBuff.size()) break;
+									strBuff = vecBuff[++n_selLine];
+									SendMessage(m_hWnd, WM_PAINT, 0, 0);
+								}
+							}
+							break;
+						}
+					}
+					return ::CallNextHookEx(m_hKeyboardHook, nCode, wParam, lParam);
+				}, g_hInst, NULL);
+				if (!m_hMouseHook)
+					MessageBox(0, L"Mouse hook failed", 0, 0);
+
+				MSG msg;
+				while (GetMessage(&msg, NULL, 0, 0))
+				{
+					if (!TranslateAccelerator(msg.hwnd, 0, &msg))
+					{
+						TranslateMessage(&msg);
+						DispatchMessage(&msg);
+					}
+				}
+				return (int)msg.wParam;
+			}, (void *)hWnd, 0, (unsigned*)&dwThreadID);
+
+			if (m_hKHThread == 0) MessageBox(0, L"m_hHotkeyThread Error\n", 0, 0);
+
+			if (m_nMode == ID_CAPTIONMODE)
+			{
+				OPENFILENAME ofn;
+				wchar_t szFile[260];
+
+				ZeroMemory(&ofn, sizeof(ofn));
+				ofn.lStructSize = sizeof(ofn);
+				ofn.hwndOwner = hWnd;
+				ofn.lpstrFile = szFile;
+
+				ofn.lpstrFile[0] = L'\0';
+				ofn.nMaxFile = sizeof(szFile);
+				ofn.lpstrFilter = L"텍스트 파일\0*.TXT\0모든 파일\0*.*\0";
+				ofn.nFilterIndex = 1;
+				ofn.lpstrFileTitle = NULL;
+				ofn.nMaxFileTitle = 0;
+				ofn.lpstrInitialDir = NULL;
+				ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+				if (GetOpenFileName(&ofn) == TRUE)
+				{
+					FILE *fp;
+					if (_wfopen_s(&fp, ofn.lpstrFile, L"rt,ccs=UTF-8") != 0)
+					{
+						MessageBox(0, L"파일을 열 수 없음", 0, 0);
+						return false;
+					}
+					std::wstring filename = ofn.lpstrFile;
+					WCHAR buff[2048];
+					std::wstring str;
+					while (fgetws(buff, 2048, fp))
+					{
+						str = buff;
+						str.erase(0, str.find_first_not_of(' '));
+						str.erase(str.find_last_not_of(' ') + 1);
+						if (!str.length()) continue;
+						vecBuff.push_back(str);
+					}
+					
+					if (vecBuff.size())
+					{
+						strBuff = L"파일을 읽었습니다 >> " + filename;
+						n_selLine = -1;
+					}
+				}
+			}
 			break;
 		}
 		case WM_GETMINMAXINFO:
@@ -242,9 +347,12 @@ namespace LayeredWnd
 			return OnPaint(hWnd);
 		case WM_DESTROY:
 			UnhookWindowsHookEx(m_hMouseHook);
+			UnhookWindowsHookEx(m_hKeyboardHook);
 			TerminateThread(m_hMHThread, 0);
 			TerminateThread(m_hDrawThread, 0);
+			TerminateThread(m_hKHThread, 0);
 			m_hMouseHook = NULL;
+			m_hKeyboardHook = NULL;
 			PostQuitMessage(0);
 			break;
 		case WM_NCMOUSEMOVE:

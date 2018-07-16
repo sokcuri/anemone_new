@@ -212,10 +212,10 @@ namespace Graphics
 		int fHeight = rect.bottom - rect.top;
 
 		float fPadding, fInnerWidth, fInnerHeight, fLineBreak;
-		wchar_t szStr[] = L"소레 요리 NO";
 
 		measuring_texts.clear();
 
+		paint.reset();
 		paint.setTextSize(36.0f);
 		paint.setAntiAlias(true);
 		paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
@@ -260,12 +260,13 @@ namespace Graphics
 			fInnerWidth = fPadding + 10.0f;
 			fInnerHeight = fPadding + paint_o2.getTextSize() + 35.0f;
 
-			for (size_t i = 0; i <= wcslen(szStr); i++)
+			std::wstring szStr = strBuff;
+			for (size_t i = 0; i <= szStr.length(); i++)
 			{
 				if (!measuring_texts.length() && szStr[i] == L' ') continue;
 				measuring_texts += szStr[i];
 				textWidth = paint_o2.measureText(measuring_texts.c_str(), measuring_texts.length() * 2, &bounds);
-				if (textWidth + fLineBreak * 2 > fWidth || i == wcslen(szStr) || szStr[i] == '\n')
+				if (textWidth + fLineBreak * 2 > fWidth || i == szStr.length() || szStr[i] == '\n')
 				{
 					measuring_texts = measuring_texts.substr(0, measuring_texts.length() - 1);
 
@@ -278,6 +279,32 @@ namespace Graphics
 						measuring_texts = szStr[i];
 				}
 			}
+		}
+
+
+		if (n_selLine != -1)
+		{
+			paint.reset();
+			paint.setAntiAlias(true);
+			//paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
+			paint.setColor(SkColorSetRGB(0, 0, 0));
+			paint.setTextSize(18.0f);
+			paint.setTextAlign(SkPaint::Align::kRight_Align);
+			std::string z;
+			z += std::to_string(n_selLine + 1);
+			z += " / ";
+			z += std::to_string(vecBuff.size());
+
+			paint.setStyle(SkPaint::kStroke_Style);
+			paint.setStrokeCap(SkPaint::Cap::kRound_Cap);
+			paint.setStrokeJoin(SkPaint::Join::kRound_Join);
+			paint.setStrokeWidth(3.0f);
+			paint.setColor(SkColorSetARGB(128, 255, 255, 255));
+			canvas->drawText(z.c_str(), z.length(), width - 10.0f, height - paint.getTextSize() - 26.0f, paint);
+
+			paint.setStyle(SkPaint::kFill_Style);
+			paint.setColor(SkColorSetRGB(0, 0, 0));
+			canvas->drawText(z.c_str(), z.length(), width - 10.0f, height - paint.getTextSize() - 26.0f, paint);
 		}
 		canvas->restore();
 		canvas->flush();
