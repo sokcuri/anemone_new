@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnemoneFrame.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="FPSCounter.h" />
     <ClInclude Include="LayeredBuffer.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Anemone.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnemoneFrame.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="LayeredBuffer.cpp" />

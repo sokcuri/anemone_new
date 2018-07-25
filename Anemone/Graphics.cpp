@@ -357,7 +357,6 @@ namespace Graphics
 		BITMAPINFO *bmpInfo = reinterpret_cast<BITMAPINFO*>(fSurfaceMemory.get());
 		StretchDIBits(memDC, 0, 0, w, h, 0, 0, w, h, bmpInfo->bmiColors, bmpInfo, DIB_RGB_COLORS, SRCCOPY);
 
-
 		POINT dcOffset = { 0, 0 };
 		GetWindowRect(hWnd, &rect);
 		SIZE size = { rect.right - rect.left, rect.bottom - rect.top };

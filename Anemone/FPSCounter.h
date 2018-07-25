@@ -15,5 +15,7 @@ public:
 	FPSCounter();
 	~FPSCounter();
 	void Update();
+
+	std::string ToString();
 };
 
