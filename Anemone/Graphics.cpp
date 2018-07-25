@@ -34,6 +34,7 @@ namespace Graphics
 		if (fWidth <= 1) fWidth = 1;
 		if (fHeight <= 1) fHeight = 1;
 
+		OutputDebugString(L"CreateContext");
 
 		fBackbufferSurface.reset();
 		const size_t bmpSize = sizeof(BITMAPINFOHEADER) + (fWidth * fHeight * sizeof(uint32_t));
@@ -51,8 +52,34 @@ namespace Graphics
 
 		void *pixels = bmpInfo->bmiColors;
 
-		SkImageInfo info = SkImageInfo::Make(fWidth, fHeight, fDisplayParams.fColorType, kPremul_SkAlphaType, fDisplayParams.fColorSpace);
+
+		BITMAPINFOHEADER bmih;
+		bmih.biSize = sizeof(BITMAPINFOHEADER);
+		bmih.biWidth = w;
+		bmih.biHeight = h;
+		bmih.biPlanes = 1;
+		bmih.biBitCount = 32;
+		bmih.biCompression = BI_RGB;
+		bmih.biSizeImage = 0;
+		bmih.biXPelsPerMeter = 0;
+		bmih.biYPelsPerMeter = 0;
+		bmih.biClrUsed = 0;
+		bmih.biClrImportant = 0;
+
+		SkBitmap *fBitmap;
+		SkCanvas *fCanvas;
+		BYTE *scan0;
+		HBITMAP native;
+		HDC screenDC = GetDC(NULL);
+		HDC memDC = CreateCompatibleDC(screenDC);
+
+		native = CreateDIBSection(NULL, (BITMAPINFO *)&bmih, 0, (VOID**)&scan0, NULL, 0);
+		HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, native);
+
+		SkImageInfo info = SkImageInfo::Make(fWidth, fHeight, fDisplayParams.fColorType, kPremul_SkAlphaType);
+
 		fBackbufferSurface = SkSurface::MakeRasterDirect(info, pixels, sizeof(uint32_t) * fWidth);
+		
 	}
 
 	void SwapBuffer(HWND hWnd, int fWidth, int fHeight)
@@ -329,6 +356,7 @@ namespace Graphics
 
 		BITMAPINFO *bmpInfo = reinterpret_cast<BITMAPINFO*>(fSurfaceMemory.get());
 		StretchDIBits(memDC, 0, 0, w, h, 0, 0, w, h, bmpInfo->bmiColors, bmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
 
 		POINT dcOffset = { 0, 0 };
 		GetWindowRect(hWnd, &rect);

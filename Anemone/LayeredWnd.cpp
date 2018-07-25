@@ -34,7 +34,7 @@ namespace LayeredWnd
 			m_nMode = reinterpret_cast<int>(((LPCREATESTRUCT)lParam)->lpCreateParams);
 			
 			DWORD dwThreadID = NULL;
-
+			/*
 			m_hMHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
 				static HWND m_hWnd;
 				m_hWnd = (HWND)pData;
@@ -73,7 +73,7 @@ namespace LayeredWnd
 			}, (void *)hWnd, 0, (unsigned*)&dwThreadID);
 
 			if (m_hMHThread == 0) MessageBox(0, L"MenuThread Error\n", 0, 0);
-
+			*/
 			m_hDrawThread = (HANDLE)_beginthreadex(NULL, 0, [](void *args) -> unsigned int {
 				HWND hWnd = (HWND)args;
 				int wait = 0;
@@ -169,8 +169,8 @@ namespace LayeredWnd
 					}
 					return ::CallNextHookEx(m_hKeyboardHook, nCode, wParam, lParam);
 				}, g_hInst, NULL);
-				if (!m_hMouseHook)
-					MessageBox(0, L"Mouse hook failed", 0, 0);
+				if (!m_hKeyboardHook)
+					MessageBox(0, L"Keyboard hook failed", 0, 0);
 
 				MSG msg;
 				while (GetMessage(&msg, NULL, 0, 0))
@@ -378,6 +378,11 @@ namespace LayeredWnd
 			SetWindowPos(hWnd, NULL, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, 0);
 			return OnSize(hWnd, rect->right - rect->left, rect->bottom - rect->top);
 		}
+		case WM_ACTIVATE:
+		{
+			//mouse_evt = true;
+		}
+		break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}

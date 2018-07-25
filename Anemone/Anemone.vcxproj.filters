@@ -23,6 +23,17 @@
     <ClCompile Include="ConfigManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LayeredBuffer.cpp">
+      <Filter>Layered Window</Filter>
+    </ClCompile>
+    <ClCompile Include="RawSize.cpp">
+      <Filter>Layered Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LayeredContext.cpp" />
+    <ClCompile Include="RawPoint.cpp">
+      <Filter>Layered Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LayeredWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -54,6 +65,17 @@
     <ClInclude Include="ConfigManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LayeredBuffer.h">
+      <Filter>Layered Window</Filter>
+    </ClInclude>
+    <ClInclude Include="RawSize.h">
+      <Filter>Layered Window</Filter>
+    </ClInclude>
+    <ClInclude Include="LayeredContext.h" />
+    <ClInclude Include="RawPoint.h">
+      <Filter>Layered Window</Filter>
+    </ClInclude>
+    <ClInclude Include="LayeredWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Anemone.ico">
@@ -69,6 +91,9 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{4b94c69f-171a-40be-8539-5d46deb63caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layered Window">
+      <UniqueIdentifier>{f462cfee-2c7d-4088-b8fc-a2f9569b2274}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
