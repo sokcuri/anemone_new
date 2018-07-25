@@ -29,11 +29,16 @@
     <ClCompile Include="RawSize.cpp">
       <Filter>Layered Window</Filter>
     </ClCompile>
-    <ClCompile Include="LayeredContext.cpp" />
     <ClCompile Include="RawPoint.cpp">
       <Filter>Layered Window</Filter>
     </ClCompile>
-    <ClCompile Include="LayeredWindow.cpp" />
+    <ClCompile Include="LayeredContext.cpp">
+      <Filter>Layered Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LayeredWindow.cpp">
+      <Filter>Layered Window</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -71,11 +76,16 @@
     <ClInclude Include="RawSize.h">
       <Filter>Layered Window</Filter>
     </ClInclude>
-    <ClInclude Include="LayeredContext.h" />
     <ClInclude Include="RawPoint.h">
       <Filter>Layered Window</Filter>
     </ClInclude>
-    <ClInclude Include="LayeredWindow.h" />
+    <ClInclude Include="LayeredContext.h">
+      <Filter>Layered Window</Filter>
+    </ClInclude>
+    <ClInclude Include="LayeredWindow.h">
+      <Filter>Layered Window</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCounter.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Anemone.ico">

@@ -6,6 +6,8 @@ LayeredBuffer::LayeredBuffer(int width, int height, SkColorType colorType, SkAlp
 	this->size = new RawSize(width, height);
 	this->colorType = colorType;
 	this->alphaType = alphaType;
+
+	Initialize();
 }
 
 LayeredBuffer::~LayeredBuffer()
@@ -20,6 +22,11 @@ SkColorType LayeredBuffer::GetColorType()
 SkAlphaType LayeredBuffer::GetAlphaType()
 {
 	return alphaType;
+}
+
+RawSize *LayeredBuffer::GetSize() const
+{
+	return size;
 }
 
 void LayeredBuffer::Initialize()
@@ -47,6 +54,8 @@ void LayeredBuffer::SwapChain()
 
 void LayeredBuffer::ReleaseResources()
 {
+	//delete this->bitmap;
+
 	ReleaseDC(nullptr, screenDC);
 	SelectObject(memDC, oldBitmap);
 	DeleteDC(memDC);
@@ -79,4 +88,5 @@ void LayeredBuffer::CreateNativeContext()
 	memDC = CreateCompatibleDC(screenDC);
 
 	native = CreateDIBSection(screenDC, reinterpret_cast<BITMAPINFO *>(&bmh), 0, &scan0, nullptr, 0);
+	oldBitmap = (HBITMAP)SelectObject(memDC, native);
 }

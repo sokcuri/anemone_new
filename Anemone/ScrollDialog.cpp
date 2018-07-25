@@ -3,18 +3,18 @@
 
 namespace ScrollDialog
 {
-	void OnHVScroll(HWND hwnd, int bar, UINT code)
+	void OnHVScroll(HWND handle, int bar, UINT code)
 	{
-		const int scrollPos = GetScrollPos(hwnd, bar, code);
+		const int scrollPos = GetScrollPos(handle, bar, code);
 
 		if (scrollPos == -1)
 			return;
 
-		SetScrollPos(hwnd, bar, scrollPos, TRUE);
-		ScrollClient(hwnd, bar, scrollPos);
+		SetScrollPos(handle, bar, scrollPos, TRUE);
+		ScrollClient(handle, bar, scrollPos);
 	}
 
-	void ScrollClient(HWND hwnd, int bar, int pos)
+	void ScrollClient(HWND handle, int bar, int pos)
 	{
 		static int s_prevx = 1;
 		static int s_prevy = 1;
@@ -30,16 +30,16 @@ namespace ScrollDialog
 
 		if (cx || cy)
 		{
-			ScrollWindow(hwnd, cx, cy, NULL, NULL);
+			ScrollWindow(handle, cx, cy, NULL, NULL);
 		}
 	}
 
-	int GetScrollPos(HWND hwnd, int bar, UINT code)
+	int GetScrollPos(HWND handle, int bar, UINT code)
 	{
 		SCROLLINFO si = {};
 		si.cbSize = sizeof(SCROLLINFO);
 		si.fMask = SIF_PAGE | SIF_POS | SIF_RANGE | SIF_TRACKPOS;
-		GetScrollInfo(hwnd, bar, &si);
+		GetScrollInfo(handle, bar, &si);
 
 		const int minPos = si.nMin;
 		const int maxPos = si.nMax - (si.nPage - 1);

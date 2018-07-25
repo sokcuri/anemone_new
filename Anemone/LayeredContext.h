@@ -2,18 +2,18 @@
 #include "SkCanvas.h"
 #include "LayeredBuffer.h"
 #include "RawPoint.h"
-class LayeredContext : SkCanvas
+class LayeredContext : public SkCanvas
 {
+	RawPoint emptyPoint;
+	RawPoint targetPosition;
+public:
 	HWND target;
 	LayeredBuffer *buffer;
 
-	RawPoint *emptyPoint = new RawPoint(0, 0);
-	RawPoint *targetPosition;
-
-public:
 	LayeredContext(HWND hWnd, LayeredBuffer *buffer);
 	~LayeredContext();
 
 	void Present();
+	void SetPosition(int x, int y);
 };
 

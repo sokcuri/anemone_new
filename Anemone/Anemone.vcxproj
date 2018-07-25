@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="FPSCounter.h" />
     <ClInclude Include="LayeredBuffer.h" />
     <ClInclude Include="LayeredContext.h" />
     <ClInclude Include="LayeredWindow.h" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="LayeredBuffer.cpp" />
     <ClCompile Include="LayeredContext.cpp" />
     <ClCompile Include="LayeredWindow.cpp" />

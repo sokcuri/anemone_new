@@ -25,7 +25,7 @@ namespace ScrollDialog
 {
 	void OnInit(HWND hWnd);
 	bool OnSize(HWND hWnd, int cx, int cy, int state);
-	void OnHVScroll(HWND hwnd, int bar, UINT code);
-	void ScrollClient(HWND hwnd, int bar, int pos);
-	int GetScrollPos(HWND hwnd, int bar, UINT code);
+	void OnHVScroll(HWND handle, int bar, UINT code);
+	void ScrollClient(HWND handle, int bar, int pos);
+	int GetScrollPos(HWND handle, int bar, UINT code);
 }

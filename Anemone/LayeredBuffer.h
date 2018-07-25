@@ -26,9 +26,12 @@ public:
 	SkColorType GetColorType();
 	SkAlphaType GetAlphaType();
 
+	RawSize *GetSize() const;
+
+	void Resize(int width, int height);
+
 private:
 	void Initialize();
-	void Resize(int width, int height);
 	void SwapChain();
 	void ReleaseResources();
 	void CreateNativeContext();

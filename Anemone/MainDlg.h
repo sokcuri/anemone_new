@@ -3,5 +3,5 @@
 
 namespace MainDlg
 {
-	INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR CALLBACK DlgProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam);
 }
