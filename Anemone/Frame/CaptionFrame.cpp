@@ -186,6 +186,7 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 					rcOwner.top + (rc.bottom / 2),
 					0, 0,          // Ignores size arguments. 
 					SWP_NOSIZE);
+				SetForegroundWindow(hWnd);
 
 				if (GetDlgCtrlID((HWND)wParam) != IDC_CAPTION_GOTO_EDIT)
 				{
@@ -193,6 +194,13 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 					return FALSE;
 				}
 				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, std::to_wstring((int)lParam).c_str());
+
+				std::wstring s;
+				s = L"มู น๘ศฃ";
+				s += L"(1 - ";
+				s += std::to_wstring(vecBuff.size());
+				s += L"): ";
+				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_STATIC, s.c_str());
 				return true;
 			}
 			case WM_COMMAND:
