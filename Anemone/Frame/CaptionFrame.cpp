@@ -76,6 +76,7 @@ bool CaptionFrame::BrowseFile()
 			typeNum = 0;
 			bBypass = true;
 		}
+		fclose(fp);
 	}
 	return true;
 }
