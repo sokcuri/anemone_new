@@ -261,15 +261,15 @@ LRESULT CaptionFrame::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 		case 256:	// WM_KEYDOWN
 		case 260:	// WM_SYSKEYDOWN
 
-			if (pHookKey->vkCode == VK_NUMPAD9)
+			if (pHookKey->vkCode == VK_PRIOR)
 			{
-				if (!n_selLine) break;
+				if (!n_selLine || n_selLine == -1) break;
 				bBypass = false;
 				strText = vecBuff[--n_selLine];
 				typeNum = 0;
 				return true;
 			}
-			else if (pHookKey->vkCode == VK_NUMPAD3)
+			else if (pHookKey->vkCode == VK_NEXT)
 			{
 				if (n_selLine >= 0 && typeNum != strText.length() + 1)
 				{
