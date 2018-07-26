@@ -3,6 +3,7 @@
 
 BaseFrame::BaseFrame()
 {
+	strBuff = L"";
 	strText = L"¾Æ³×¸ð³× v2.0 by ¼ÒÄí¸´";
 }
 
