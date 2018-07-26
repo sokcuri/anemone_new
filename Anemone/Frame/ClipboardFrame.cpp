@@ -95,6 +95,11 @@ bool ClipboardFrame::OnDrawClipboard()
 		return false;
 	}
 
+	if (!(IsClipboardFormatAvailable(CF_TEXT) && IsClipboardFormatAvailable(CF_UNICODETEXT)))
+	{
+		return false;
+	}
+
 	auto hglb = GetClipboardData(CF_UNICODETEXT);
 	auto pchData = reinterpret_cast<wchar_t *>(GlobalLock(hglb));
 	if (bFirst)
