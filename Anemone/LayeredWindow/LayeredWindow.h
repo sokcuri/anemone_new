@@ -12,13 +12,9 @@ class LayeredWindow
 {
 	CRITICAL_SECTION cs;
 
-	RawPoint position;
-	RawSize size;
-
 	std::wstring title;
 
 	FPSCounter fps;
-
 	HANDLE thread;
 
 	bool onMouse = false;
@@ -30,6 +26,9 @@ class LayeredWindow
 	HHOOK m_hMouseHook;
 
 public:
+	RawPoint position;
+	RawSize size;
+
 	WNDCLASSEXW wcex;
 
 	HWND handle;
@@ -45,7 +44,12 @@ public:
 	virtual bool OnCreate();
 	virtual bool OnFirstProc();
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual bool OnDestroy();
+	virtual bool OnChangeCbChain(WPARAM wParam, LPARAM lParam);
+	virtual bool OnDrawClipboard();
+	virtual bool OnDestroyClipboard();
 	virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	virtual LRESULT KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 protected:
 	int m_mode = 0;

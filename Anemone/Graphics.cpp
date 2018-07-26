@@ -309,30 +309,7 @@ namespace Graphics
 		}
 
 
-		if (n_selLine != -1)
-		{
-			paint.reset();
-			paint.setAntiAlias(true);
-			//paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
-			paint.setColor(SkColorSetRGB(0, 0, 0));
-			paint.setTextSize(18.0f);
-			paint.setTextAlign(SkPaint::Align::kRight_Align);
-			std::string z;
-			z += std::to_string(n_selLine + 1);
-			z += " / ";
-			z += std::to_string(vecBuff.size());
-
-			paint.setStyle(SkPaint::kStroke_Style);
-			paint.setStrokeCap(SkPaint::Cap::kRound_Cap);
-			paint.setStrokeJoin(SkPaint::Join::kRound_Join);
-			paint.setStrokeWidth(3.0f);
-			paint.setColor(SkColorSetARGB(128, 255, 255, 255));
-			canvas->drawText(z.c_str(), z.length(), width - 10.0f, height - paint.getTextSize() - 26.0f, paint);
-
-			paint.setStyle(SkPaint::kFill_Style);
-			paint.setColor(SkColorSetRGB(0, 0, 0));
-			canvas->drawText(z.c_str(), z.length(), width - 10.0f, height - paint.getTextSize() - 26.0f, paint);
-		}
+		
 		canvas->restore();
 		canvas->flush();
 

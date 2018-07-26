@@ -164,11 +164,11 @@
     <ClInclude Include="LayeredWindow\LayeredBuffer.h" />
     <ClInclude Include="LayeredWindow\LayeredContext.h" />
     <ClInclude Include="LayeredWindow\LayeredWindow.h" />
+    <ClInclude Include="LayeredWnd.h" />
     <ClInclude Include="MainDlg.h" />
     <ClInclude Include="ScrollDialog.h" />
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="LayeredWnd.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingDlg.h" />
     <ClInclude Include="stdafx.h" />
@@ -187,10 +187,10 @@
     <ClCompile Include="LayeredWindow\LayeredBuffer.cpp" />
     <ClCompile Include="LayeredWindow\LayeredContext.cpp" />
     <ClCompile Include="LayeredWindow\LayeredWindow.cpp" />
+    <ClCompile Include="LayeredWnd.cpp" />
     <ClCompile Include="MainDlg.cpp" />
     <ClCompile Include="ScrollDialog.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="LayeredWnd.cpp" />
     <ClCompile Include="SettingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -82,7 +82,9 @@ bool LayeredWindow::OnCreate()
 	if (m_hMHThread == 0) MessageBox(0, L"MenuThread Error\n", 0, 0);
 
 	m_hKHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
-		LayeredWindow *p = (LayeredWindow *)pData;
+		static LayeredWindow *p;
+		p = (LayeredWindow *)pData;
+
 		static HWND m_hWnd;
 		m_hWnd = (HWND)pData;
 		
@@ -91,36 +93,7 @@ bool LayeredWindow::OnCreate()
 
 		p->m_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
 		{
-			if (nCode >= 0)
-			{
-				PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
-
-				switch (wParam)
-				{
-				case 256:	// WM_KEYDOWN
-				case 260:	// WM_SYSKEYDOWN
-					if (pHookKey->vkCode == VK_NUMPAD9)
-					{
-						if (mode == CAPTION_MODE)
-						{
-							if (!n_selLine) break;
-							strBuff = vecBuff[--n_selLine];
-							SendMessage(m_hWnd, WM_PAINT, 0, 0);
-						}
-					}
-					else if (pHookKey->vkCode == VK_NUMPAD3)
-					{
-						if (mode == CAPTION_MODE)
-						{
-							if (n_selLine + 1 == vecBuff.size()) break;
-							strBuff = vecBuff[++n_selLine];
-							SendMessage(m_hWnd, WM_PAINT, 0, 0);
-						}
-					}
-					break;
-				}
-			}
-			return ::CallNextHookEx(nullptr, nCode, wParam, lParam);
+			return p->KeyboardHookProc(nCode, wParam, lParam);
 		}, nullptr, NULL);
 		if (!p->m_hKeyboardHook)
 			MessageBox(0, L"Keyboard hook failed", 0, 0);
@@ -148,13 +121,16 @@ inline bool Instanceof(const T *ptr) {
 
 LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	auto p = (LayeredWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	auto p = reinterpret_cast<LayeredWindow *>(GetWindowLongPtr(hWnd, GWL_USERDATA));
 	
 	switch (message)
 	{
 	case WM_NCCREATE:
 	{
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)((CREATESTRUCT*)lParam)->lpCreateParams);
+		auto p = reinterpret_cast<LayeredWindow *>(((CREATESTRUCT*)lParam)->lpCreateParams);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(p));
+
+		if (!p->handle) p->handle = hWnd;
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	}
@@ -162,6 +138,28 @@ LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 }
 
 bool LayeredWindow::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	return false;
+}
+
+bool LayeredWindow::OnDestroy()
+{
+	TerminateThread(thread, 0);
+	PostQuitMessage(0);
+	return true;
+}
+
+bool LayeredWindow::OnChangeCbChain(WPARAM wParam, LPARAM lParam)
+{
+	return false;
+}
+
+bool LayeredWindow::OnDrawClipboard()
+{
+	return false;
+}
+
+bool LayeredWindow::OnDestroyClipboard()
 {
 	return false;
 }
@@ -176,8 +174,7 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WM_CREATE:
 	{
 		PostMessage(hWnd, WM_USER + 100, 0, 0);
-		OnCreate();
-		return 0;
+		return OnCreate();
 	}
 	case WM_GETMINMAXINFO:
 	{
@@ -186,15 +183,23 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		lpMMI->ptMinTrackSize.y = 90;
 		break;
 	}
+	case WM_CHANGECBCHAIN:
+		OutputDebugString(L"WM_CHANGECBCHAIN\n");
+		return OnChangeCbChain(wParam, lParam);
+	case WM_DRAWCLIPBOARD:
+		OutputDebugString(L"WM_DRAWCLIPBOARD\n");
+		return OnDrawClipboard();
+	case WM_DESTROYCLIPBOARD:
+		OutputDebugString(L"WM_DESTROYCLIPBOARD\n");
+		return OnDestroyClipboard();
+		break;
 	case WM_ERASEBKGND:
 	case WM_PAINT:
 		return false;
 	case WM_COMMAND:
 		return OnCommand(wParam, lParam);
 	case WM_DESTROY:
-		TerminateThread(thread, 0);
-		PostQuitMessage(0);
-		break;
+		return OnDestroy();
 	case WM_NCMOUSEMOVE:
 	case WM_MOUSEMOVE:
 		mouse_evt = true;
@@ -305,8 +310,46 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	return 0;
 }
 
+LRESULT LayeredWindow::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	if (nCode >= 0)
+	{
+		PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
+
+		switch (wParam)
+		{
+		case 256:	// WM_KEYDOWN
+		case 260:	// WM_SYSKEYDOWN
+/*
+			if (pHookKey->vkCode == VK_NUMPAD9)
+			{
+				if (m_mode == CAPTION_MODE)
+				{
+					if (!n_selLine) break;
+					strBuff = vecBuff[--n_selLine];
+					SendMessage(handle, WM_PAINT, 0, 0);
+				}
+			}
+			else if (pHookKey->vkCode == VK_NUMPAD3)
+			{
+				if (m_mode == CAPTION_MODE)
+				{
+					if (n_selLine + 1 == vecBuff.size()) break;
+					strBuff = vecBuff[++n_selLine];
+					SendMessage(handle, WM_PAINT, 0, 0);
+				}
+			}*/
+			break;
+		}
+	}
+	return ::CallNextHookEx(nullptr, nCode, wParam, lParam);
+}
+
 void LayeredWindow::Resize(int width, int height)
 {
+	size.cx = width;
+	size.cy = height;
+
 	buffer->Resize(width, height);
 	delete context;
 	context = new LayeredContext(handle, buffer);
@@ -340,6 +383,8 @@ void LayeredWindow::Create()
 
 	DWORD dwThreadID;
 
+	size.cx = width;
+	size.cy = height;
 	buffer = new LayeredBuffer(width, height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
 	context = new LayeredContext(handle, buffer);
 	context->SetPosition(x, y);
