@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "LayeredWindow.h"
+#include "BaseFrame.h"
 
 int LayeredWindow::m_nMode = 0;
 
@@ -138,9 +139,15 @@ bool LayeredWindow::OnCreate()
 	return 0;
 }
 
-inline LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+template<typename Base, typename T>
+inline bool Instanceof(const T *ptr) {
+	return dynamic_cast<const Base*>(ptr) != nullptr;
+}
+
+LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	LayeredWindow *p = (LayeredWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	auto p = (LayeredWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	
 	switch (message)
 	{
 	case WM_NCCREATE:
@@ -161,8 +168,12 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 {
 	switch (message)
 	{
+	case WM_USER + 100:
+		OnFirstProc();
+		break;
 	case WM_CREATE:
 	{
+		PostMessage(hWnd, WM_USER + 100, 0, 0);
 		OnCreate();
 		return 0;
 	}
@@ -177,15 +188,13 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WM_PAINT:
 		return false;
 	case WM_COMMAND:
-		if (!OnCommand(wParam, lParam))
-			return DefWindowProc(handle, message, wParam, lParam);
+		return OnCommand(wParam, lParam);
 	case WM_DESTROY:
 		TerminateThread(thread, 0);
 		PostQuitMessage(0);
 		break;
 	case WM_NCMOUSEMOVE:
 	case WM_MOUSEMOVE:
-		//latest_evt = message;
 		mouse_evt = true;
 
 		TRACKMOUSEEVENT mouseEvent;
@@ -206,16 +215,15 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_NCHITTEST:
 	{
-		POINT pt;
 		RECT rc;
 		GetClientRect(hWnd, &rc);
-		pt.x = LOWORD(lParam);
-		pt.y = HIWORD(lParam);
+
+		RawPoint pt(LOWORD(lParam), HIWORD(lParam));
 		ScreenToClient(hWnd, &pt);
 
 		int BORDERWIDTH = 5;
 
-		/*top-left, top and top-right*/
+		/* top-left, top and top-right */
 		if (pt.y < BORDERWIDTH)
 			if (pt.x < BORDERWIDTH)
 				return HTTOPLEFT;
@@ -223,7 +231,7 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				return HTTOPRIGHT;
 			else
 				return HTTOP;
-		/*bottom-left, bottom and bottom-right */
+		/* bottom-left, bottom and bottom-right */
 		if (pt.y >(rc.bottom - BORDERWIDTH))
 			if (pt.x < BORDERWIDTH)
 				return HTBOTTOMLEFT;
@@ -235,7 +243,6 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 			return HTLEFT;
 		if (pt.x >(rc.right - BORDERWIDTH))
 			return HTRIGHT;
-
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	break;
@@ -262,13 +269,8 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		static HWND m_hWnd;
 		m_hWnd = hWnd;
 
-		POINT pt;
-		pt.x = LOWORD(lParam);
-		pt.y = HIWORD(lParam);
-
-		HMENU hMenu = LoadMenu(NULL, MAKEINTRESOURCE(IDC_ANEMONE));
-		hMenu = GetSubMenu(hMenu, 0);
-
+		RawPoint pt(LOWORD(lParam), HIWORD(lParam));
+		HMENU hMenu = GetSubMenu(LoadMenu(NULL, MAKEINTRESOURCE(IDC_ANEMONE)), 0);
 		HHOOK hCBTHook = SetWindowsHookEx(WH_CBT, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
 		{
 			if (nCode == HCBT_CREATEWND)
@@ -276,11 +278,11 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 				HWND m_hMenuWnd = (HWND)wParam;
 				WCHAR name[1024] = { 0 };
 				GetClassName(m_hMenuWnd, name, sizeof(name));
+
 				if (!wcscmp(name, L"#32768"))
 				{
 					int nExStyle_Menu = GetWindowLong(m_hMenuWnd, GWL_EXSTYLE);
-					nExStyle_Menu |= WS_EX_NOACTIVATE;
-					SetWindowLong(m_hMenuWnd, GWL_EXSTYLE, nExStyle_Menu);
+					SetWindowLong(m_hMenuWnd, GWL_EXSTYLE, nExStyle_Menu |= WS_EX_NOACTIVATE);
 					SetParent(m_hMenuWnd, m_hWnd);
 					SetWindowText(m_hMenuWnd, L"AnemoneContextMenu");
 				}
@@ -314,7 +316,7 @@ void LayeredWindow::Create()
 	wcex.lpszClassName = temp_class_name.c_str();
 	RegisterClassExW(&wcex);
 
-	handle = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_APPWINDOW, temp_class_name.c_str(), title.c_str(), WS_POPUP,
+	handle = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_APPWINDOW | WS_EX_TOPMOST, temp_class_name.c_str(), title.c_str(), WS_POPUP,
 		position.x, position.y, size.cx, size.cy, nullptr, nullptr, nullptr, this);
 	
 	if (!handle)
@@ -326,12 +328,11 @@ void LayeredWindow::Create()
 	ShowWindow(handle, true);
 
 
-	int cx = GetSystemMetrics(SM_CXSCREEN);
-	int cy = GetSystemMetrics(SM_CYSCREEN);
-
 	int width = 800;
 	int height = 200;
 
+	int cx = GetSystemMetrics(SM_CXSCREEN);
+	int cy = GetSystemMetrics(SM_CYSCREEN);
 	int x = (cx - width) / 2;
 	int y = (cy - height) / 2;
 
@@ -376,10 +377,11 @@ void LayeredWindow::Create()
 	}
 }
 
-void LayeredWindow::OnRender()
+bool LayeredWindow::OnRender()
 {
 	static int nStep = 0;
 	nStep++;
+
 	auto canvas_size = buffer->GetSize();
 	int width = canvas_size->cx;
 	int height = canvas_size->cy;
@@ -406,4 +408,10 @@ void LayeredWindow::OnRender()
 	paint.setColor(SkColorSetRGB(0, 0, 0));
 	context->drawText(z.c_str(), z.length(), width - 10.0f, height - paint.getTextSize() - 26.0f, paint);
 
+	return true;
+}
+
+bool LayeredWindow::OnFirstProc()
+{
+	return false;
 }

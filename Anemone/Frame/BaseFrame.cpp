@@ -1,30 +1,17 @@
 #include "stdafx.h"
-#include "AnemoneFrame.h"
+#include "BaseFrame.h"
 
 
-AnemoneFrame::AnemoneFrame()
+BaseFrame::BaseFrame()
 {
 }
 
 
-AnemoneFrame::~AnemoneFrame()
+BaseFrame::~BaseFrame()
 {
 }
 
-void AnemoneFrame::OnRender()
-{
-	context->clear(SK_ColorTRANSPARENT);
-	wchar_t str[255];
-	swprintf_s(str, L"time: %lld", GetTickCount64());
-	strBuff = str;
-
-	LayeredWindow::OnRender();
-	DrawSysMenu();
-	DrawContent();
-	return;
-}
-
-RawSize AnemoneFrame::GetWindowSize()
+RawSize BaseFrame::GetWindowSize()
 {
 	RECT rect;
 	GetWindowRect(handle, &rect);
@@ -33,7 +20,7 @@ RawSize AnemoneFrame::GetWindowSize()
 	return RawSize(width, height);
 }
 
-void AnemoneFrame::DrawSysMenu()
+void BaseFrame::DrawSysMenu()
 {
 	RawSize size = GetWindowSize();
 
@@ -64,8 +51,10 @@ void AnemoneFrame::DrawSysMenu()
 	paint.reset();
 	paint.setAntiAlias(true);
 	paint.setColor(SkColorSetRGB(0, 0, 0));
+	paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
 	paint.setTextSize(14.0f);
-	context->drawText("Anemone v2.0", 14, 10.0f, 20.0f, paint);
+	std::wstring title = L"Anemone v2.0 " + advTitle;
+	context->drawText(title.c_str(), title.length() * 2, 10.0f, 20.0f, paint);
 
 	// Draw to Sysmenu button padding
 	paint.reset();
@@ -122,7 +111,7 @@ void AnemoneFrame::DrawSysMenu()
 	context->drawRect(rt, paint);
 }
 
-void AnemoneFrame::DrawContent()
+void BaseFrame::DrawContent()
 {
 	RawSize size = GetWindowSize();
 
@@ -216,7 +205,7 @@ void AnemoneFrame::DrawContent()
 	context->flush();
 }
 
-bool AnemoneFrame::OnCommand(LPARAM lParam, WPARAM wParam)
+bool BaseFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	int wmId = LOWORD(wParam);
 	switch (wmId)
@@ -234,15 +223,17 @@ bool AnemoneFrame::OnCommand(LPARAM lParam, WPARAM wParam)
 	}
 	return true;
 }
-
+/*
 LRESULT AnemoneFrame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	//OutputDebugString(L"AnemoneFrame::WndProc\n");
 	switch (message)
 	{
 	case WM_COMMAND:
-		if (OnCommand(lParam, wParam))
+		if (OnCommand(wParam, lParam))
 			return true;
 	}
 
 	return LayeredWindow::WndProc(hWnd, message, wParam, lParam);
 }
+*/

@@ -1,6 +1,6 @@
 #pragma once
-#include "Anemone.h"
-#include "resource.h"
+#include "..\Anemone.h"
+#include "..\resource.h"
 #include "RawPoint.h"
 #include "RawSize.h"
 #include "LayeredBuffer.h"
@@ -41,8 +41,9 @@ public:
 
 	void Create();
 	void Resize(int width, int height);
-	virtual void OnRender();
+	virtual bool OnRender();
 	virtual bool OnCreate();
+	virtual bool OnFirstProc();
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
