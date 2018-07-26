@@ -29,8 +29,6 @@ class LayeredWindow
 	HHOOK m_hKeyboardHook;
 	HHOOK m_hMouseHook;
 
-	static int m_nMode;
-
 public:
 	WNDCLASSEXW wcex;
 
@@ -50,7 +48,7 @@ public:
 	virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
-	int mode = 0;
+	int m_mode = 0;
 
 private:
 	void Initialize();

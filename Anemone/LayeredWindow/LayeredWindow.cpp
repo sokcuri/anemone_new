@@ -2,8 +2,6 @@
 #include "LayeredWindow.h"
 #include "BaseFrame.h"
 
-int LayeredWindow::m_nMode = 0;
-
 LayeredWindow::LayeredWindow()
 {
 	InitializeCriticalSection(&cs);
@@ -87,6 +85,10 @@ bool LayeredWindow::OnCreate()
 		LayeredWindow *p = (LayeredWindow *)pData;
 		static HWND m_hWnd;
 		m_hWnd = (HWND)pData;
+		
+		static int mode;
+		mode = p->m_mode;
+
 		p->m_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
 		{
 			if (nCode >= 0)
@@ -99,7 +101,7 @@ bool LayeredWindow::OnCreate()
 				case 260:	// WM_SYSKEYDOWN
 					if (pHookKey->vkCode == VK_NUMPAD9)
 					{
-						if (m_nMode == ID_CAPTIONMODE)
+						if (mode == CAPTION_MODE)
 						{
 							if (!n_selLine) break;
 							strBuff = vecBuff[--n_selLine];
@@ -108,7 +110,7 @@ bool LayeredWindow::OnCreate()
 					}
 					else if (pHookKey->vkCode == VK_NUMPAD3)
 					{
-						if (m_nMode == ID_CAPTIONMODE)
+						if (mode == CAPTION_MODE)
 						{
 							if (n_selLine + 1 == vecBuff.size()) break;
 							strBuff = vecBuff[++n_selLine];
@@ -270,7 +272,7 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		m_hWnd = hWnd;
 
 		RawPoint pt(LOWORD(lParam), HIWORD(lParam));
-		HMENU hMenu = GetSubMenu(LoadMenu(NULL, MAKEINTRESOURCE(IDM_CLIPBOARD + mode)), 0);
+		HMENU hMenu = GetSubMenu(LoadMenu(NULL, MAKEINTRESOURCE(IDC_CLIPBOARD - 1 + m_mode)), 0);
 		HHOOK hCBTHook = SetWindowsHookEx(WH_CBT, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
 		{
 			if (nCode == HCBT_CREATEWND)

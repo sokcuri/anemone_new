@@ -8,8 +8,8 @@
 #include "SkMaskFilter.h"
 #include "SkBlurMask.h"
 
-#define CAPTION_MODE	1
-#define CLIPBOARD_MODE	2
+#define CLIPBOARD_MODE	1
+#define CAPTION_MODE	2
 #define TRANSLATE_MODE	3
 
 class BaseFrame : public LayeredWindow
