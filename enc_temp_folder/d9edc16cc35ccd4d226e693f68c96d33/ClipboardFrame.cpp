@@ -36,6 +36,7 @@ bool ClipboardFrame::OnRender()
 		if (typeNum <= strText.length())
 		{
 			milli_duration duration = system_clock::now() - lastTime;
+			OutputDebugString(std::to_wstring(duration.count()).c_str());
 			if (duration.count() > text_speed)
 			{
 				strBuff = strText.substr(0, typeNum++);
