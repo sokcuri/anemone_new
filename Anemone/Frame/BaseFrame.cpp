@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "BaseFrame.h"
 
-
 BaseFrame::BaseFrame()
 {
 }
@@ -53,7 +52,12 @@ void BaseFrame::DrawSysMenu()
 	paint.setColor(SkColorSetRGB(0, 0, 0));
 	paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
 	paint.setTextSize(14.0f);
-	std::wstring title = L"Anemone v2.0 " + advTitle;
+	std::wstring params = L" -- ";
+	params += WIDEN(TXT(GIT_CUR_COMMIT));
+	params += L" - ";
+	params += WIDEN(__TIMESTAMP__);
+	std::wstring title = WIDEN(ANEMONE_VER);
+	title += L" " + advTitle + params;
 	context->drawText(title.c_str(), title.length() * 2, 10.0f, 20.0f, paint);
 
 	// Draw to Sysmenu button padding

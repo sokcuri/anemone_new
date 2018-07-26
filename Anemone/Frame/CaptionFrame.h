@@ -3,7 +3,11 @@
 
 class CaptionFrame : public BaseFrame
 {
+	bool bBypass;
 	int n_selLine;
+
+	size_t typeNum;
+	time_point lastTime;
 
 public:
 	CaptionFrame();

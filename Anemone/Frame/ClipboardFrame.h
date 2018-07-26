@@ -7,6 +7,7 @@ using milli_duration = std::chrono::duration<double, std::milli>;
 
 class ClipboardFrame : public BaseFrame
 {
+	bool bBypass;
 	bool bFirst;
 	bool bStart;
 

@@ -392,5 +392,7 @@ ASALocalRun/
 # Third-Party Folder
 skia/
 
+# gitparams
+gitparams.h
 
 # End of https://www.gitignore.io/api/c++,windows,visualstudio

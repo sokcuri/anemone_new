@@ -4,6 +4,8 @@
 
 CaptionFrame::CaptionFrame()
 {
+	typeNum = 0;
+	bBypass = false;
 	m_mode = CAPTION_MODE;
 	n_selLine = -1;
 	advTitle = L"(Caption Mode)";
@@ -49,15 +51,20 @@ bool CaptionFrame::BrowseFile()
 			return false;
 		}
 		std::wstring filename = ofn.lpstrFile;
+
 		WCHAR buff[2048];
-		std::wstring str;
+		std::wstring s;
+
+		vecBuff.clear();
+
 		while (fgetws(buff, 2048, fp))
 		{
-			str = buff;
-			str.erase(0, str.find_first_not_of(' '));
-			str.erase(str.find_last_not_of(' ') + 1);
-			if (!str.length()) continue;
-			vecBuff.push_back(str);
+			s = buff;
+			s.erase(0, s.find_first_not_of(' '));
+			s.erase(s.find_last_not_of(' ') + 1);
+			if (s[0] == '\n' || s[0] == '\r' && s[1] == '\n') continue;
+			if (!s.length()) continue;
+			vecBuff.push_back(s);
 		}
 
 		filename = filename.substr(filename.rfind('\\') + 1);
@@ -65,6 +72,8 @@ bool CaptionFrame::BrowseFile()
 		{
 			strText = L"파일을 읽었습니다. \n> " + filename;
 			n_selLine = -1;
+			typeNum = 0;
+			bBypass = true;
 		}
 	}
 	return true;
@@ -91,7 +100,6 @@ void CaptionFrame::DrawLineCount()
 	paint.setStrokeWidth(3.0f);
 	paint.setColor(SkColorSetARGB(128, 255, 255, 255));
 
-	OutputDebugString(std::to_wstring(size.cx).c_str());
 	context->drawText(z.c_str(), z.length(), size.cx - 10.0f, size.cy - paint.getTextSize() - 46.0f, paint);
 
 	paint.setStyle(SkPaint::kFill_Style);
@@ -102,12 +110,35 @@ void CaptionFrame::DrawLineCount()
 bool CaptionFrame::OnRender()
 {
 	context->clear(SK_ColorTRANSPARENT);
-	strBuff = strText;
 
-	BaseFrame::OnRender();
+	if (bBypass)
+	{
+		strBuff = strText;
+	}
+	else
+	{
+		if (!typeNum)
+		{
+			lastTime = system_clock::now();
+			typeNum++;
+		}
+
+		if (typeNum <= strText.length())
+		{
+			milli_duration duration = system_clock::now() - lastTime;
+			OutputDebugString(std::to_wstring(duration.count()).c_str());
+			if (duration.count() > text_speed)
+			{
+				strBuff = strText.substr(0, typeNum++);
+				lastTime = system_clock::now();
+			}
+		}
+	}
+
+	LayeredWindow::OnRender();
 	DrawSysMenu();
 	DrawLineCount();
-	
+
 	DrawContent();
 	return true;
 }
@@ -139,23 +170,27 @@ LRESULT CaptionFrame::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 			if (pHookKey->vkCode == VK_NUMPAD9)
 			{
-				OutputDebugString(L"VK_NUMPAD9\n");
-				if (m_mode == CAPTION_MODE)
-				{
-					if (!n_selLine) break;
-					strText = vecBuff[--n_selLine];
-					SendMessage(handle, WM_PAINT, 0, 0);
-				}
+				if (!n_selLine) break;
+				bBypass = false;
+				strText = vecBuff[--n_selLine];
+				typeNum = 0;
+				return true;
 			}
 			else if (pHookKey->vkCode == VK_NUMPAD3)
 			{
-				OutputDebugString(L"VK_NUMPAD3\n");
-				if (m_mode == CAPTION_MODE)
+				if (n_selLine >= 0 && typeNum != strText.length() + 1)
 				{
-					if (n_selLine + 1 == vecBuff.size()) break;
-					strText = vecBuff[++n_selLine];
-					SendMessage(handle, WM_PAINT, 0, 0);
+					bBypass = true;
+					typeNum = strText.length() + 1;
+					strText = vecBuff[n_selLine];
+					return true;
 				}
+
+				bBypass = false;
+				if (n_selLine + 1 == vecBuff.size()) break;
+				strText = vecBuff[++n_selLine];
+				typeNum = 0;
+				return true;
 			}
 			break;
 		}

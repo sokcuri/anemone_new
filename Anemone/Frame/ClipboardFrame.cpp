@@ -3,6 +3,7 @@
 
 ClipboardFrame::ClipboardFrame()
 {
+	bBypass = true;
 	bFirst = true;
 	bStart = false;
 
@@ -19,22 +20,31 @@ ClipboardFrame::~ClipboardFrame()
 bool ClipboardFrame::OnRender()
 {
 	context->clear(SK_ColorTRANSPARENT);
-	if (!typeNum)
+
+	if (bBypass)
 	{
-		lastTime = system_clock::now();
-		typeNum++;
+		strBuff = strText;
 	}
-	
-	if (typeNum <= strText.length())
+	else
 	{
-		milli_duration duration = system_clock::now() - lastTime;
-		OutputDebugString(std::to_wstring(duration.count()).c_str());
-		if (duration.count() > 30)
+		if (!typeNum)
 		{
-			strBuff = strText.substr(0, typeNum++);
 			lastTime = system_clock::now();
+			typeNum++;
+		}
+
+		if (typeNum <= strText.length())
+		{
+			milli_duration duration = system_clock::now() - lastTime;
+			OutputDebugString(std::to_wstring(duration.count()).c_str());
+			if (duration.count() > text_speed)
+			{
+				strBuff = strText.substr(0, typeNum++);
+				lastTime = system_clock::now();
+			}
 		}
 	}
+
 
 	LayeredWindow::OnRender();
 	DrawSysMenu();

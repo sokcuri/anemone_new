@@ -128,7 +128,7 @@ namespace Graphics
 		paint.setAntiAlias(true);
 		paint.setColor(SkColorSetRGB(0, 0, 0));
 		paint.setTextSize(14.0f);
-		frameCanvas.drawText("Anemone v2.0", 14, 10.0f, 20.0f, paint);
+		frameCanvas.drawText(WIDEN(ANEMONE_VER), 14, 10.0f, 20.0f, paint);
 
 		// Draw to Sysmenu button padding
 		paint.reset();
