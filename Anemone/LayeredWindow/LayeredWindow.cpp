@@ -270,7 +270,7 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		m_hWnd = hWnd;
 
 		RawPoint pt(LOWORD(lParam), HIWORD(lParam));
-		HMENU hMenu = GetSubMenu(LoadMenu(NULL, MAKEINTRESOURCE(IDC_ANEMONE)), 0);
+		HMENU hMenu = GetSubMenu(LoadMenu(NULL, MAKEINTRESOURCE(IDM_CLIPBOARD + mode)), 0);
 		HHOOK hCBTHook = SetWindowsHookEx(WH_CBT, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
 		{
 			if (nCode == HCBT_CREATEWND)

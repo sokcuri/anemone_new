@@ -4,6 +4,7 @@
 
 ClipboardFrame::ClipboardFrame()
 {
+	mode = CLIPBOARD_MODE;
 	advTitle = L"(Clipboard Mode)";
 }
 

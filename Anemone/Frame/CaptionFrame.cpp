@@ -4,6 +4,7 @@
 
 CaptionFrame::CaptionFrame()
 {
+	mode = CAPTION_MODE;
 	advTitle = L"(Caption Mode)";
 	strText = L"캡션 모드입니다";
 }

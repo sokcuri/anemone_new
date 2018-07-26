@@ -4,6 +4,7 @@
 
 TranslateFrame::TranslateFrame()
 {
+	mode = TRANSLATE_MODE;
 	advTitle = L"(Translate Mode)";
 }
 

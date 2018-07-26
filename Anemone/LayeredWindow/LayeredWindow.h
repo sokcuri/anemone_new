@@ -1,6 +1,6 @@
 #pragma once
-#include "..\Anemone.h"
-#include "..\resource.h"
+#include "../Anemone.h"
+#include "../resource.h"
 #include "RawPoint.h"
 #include "RawSize.h"
 #include "LayeredBuffer.h"
@@ -16,7 +16,6 @@ class LayeredWindow
 	RawSize size;
 
 	std::wstring title;
-	WNDCLASSEXW wcex;
 
 	FPSCounter fps;
 
@@ -31,7 +30,10 @@ class LayeredWindow
 	HHOOK m_hMouseHook;
 
 	static int m_nMode;
+
 public:
+	WNDCLASSEXW wcex;
+
 	HWND handle;
 	LayeredBuffer *buffer;
 	LayeredContext *context;
@@ -46,6 +48,9 @@ public:
 	virtual bool OnFirstProc();
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+protected:
+	int mode = 0;
 
 private:
 	void Initialize();
