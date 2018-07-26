@@ -3,6 +3,7 @@
 
 BaseFrame::BaseFrame()
 {
+	strText = L"¾Æ³×¸ð³× v2.0 by ¼ÒÄí¸´";
 }
 
 
@@ -52,12 +53,13 @@ void BaseFrame::DrawSysMenu()
 	paint.setColor(SkColorSetRGB(0, 0, 0));
 	paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
 	paint.setTextSize(14.0f);
-	std::wstring params = L" -- ";
-	params += WIDEN(TXT(GIT_CUR_COMMIT));
-	params += L" - ";
-	params += WIDEN(__TIMESTAMP__);
-	std::wstring title = WIDEN(ANEMONE_VER);
-	title += L" " + advTitle + params;
+
+	std::wstring title = g_Version;
+	title += L" ";
+	title += advTitle;
+	title += L" - ";
+	title += g_BuildInfo;
+
 	context->drawText(title.c_str(), title.length() * 2, 10.0f, 20.0f, paint);
 
 	// Draw to Sysmenu button padding

@@ -22,12 +22,7 @@ namespace MainDlg
 			
 			MoveWindow(hWnd, (cx - width) / 2, (cy - height) / 2, width, height, false);
 
-			std::wstring params = L" -- ";
-			params += WIDEN(TXT(GIT_CUR_COMMIT));
-			params += L" - ";
-			params += WIDEN(__TIMESTAMP__);
-			std::wstring title = WIDEN(ANEMONE_VER) + params;
-			SetWindowText(hWnd, title.c_str());
+			SetWindowText(hWnd, g_AnemoneInfo);
 			break;
 		}
 		case WM_SHOWWINDOW:

@@ -3,14 +3,14 @@
 
 ClipboardFrame::ClipboardFrame()
 {
-	bBypass = true;
+	bBypass = false;
+
 	bFirst = true;
 	bStart = false;
 
 	m_mode = CLIPBOARD_MODE;
 	advTitle = L"(Clipboard Mode)";
 	typeNum = 0;
-	strText = L"¾Æ³×¸ð³× v2.0 by ¼ÒÄí¸´";
 }
 
 ClipboardFrame::~ClipboardFrame()

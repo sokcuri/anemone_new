@@ -4,12 +4,13 @@
 
 CaptionFrame::CaptionFrame()
 {
-	typeNum = 0;
 	bBypass = false;
-	m_mode = CAPTION_MODE;
+
 	n_selLine = -1;
+
+	m_mode = CAPTION_MODE;
 	advTitle = L"(Caption Mode)";
-	strText = L"캡션 모드입니다";
+	typeNum = 0;
 }
 
 
