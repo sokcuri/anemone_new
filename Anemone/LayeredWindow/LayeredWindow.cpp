@@ -367,7 +367,7 @@ void LayeredWindow::Create()
 	if (!handle)
 	{
 		MessageBox(0, L"창 생성에 실패했습니다", 0, MB_ICONERROR);
-		return;
+		return; 
 	}
 
 	ShowWindow(handle, true);
@@ -404,6 +404,8 @@ void LayeredWindow::Create()
 			Sleep(1);
 		}
 		return 0;
+
+
 	}, (void *)this, 0, (unsigned*)&dwThreadID);
 
 	if (thread == 0)

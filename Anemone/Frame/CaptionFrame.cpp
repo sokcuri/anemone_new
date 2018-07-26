@@ -5,7 +5,7 @@
 CaptionFrame::CaptionFrame()
 {
 	bBypass = false;
-
+	bPauseKBHook = false;
 	n_selLine = -1;
 
 	m_mode = CAPTION_MODE;
@@ -154,6 +154,86 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 	case IDM_CAPTION_BROWSE:
 		BrowseFile();
 		break;
+	case IDM_CAPTION_GOTO:
+	{
+		bPauseKBHook = true;
+		size_t goto_num = DialogBoxParam(nullptr, MAKEINTRESOURCE(IDD_CAPTION_GOTO), handle, [](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> INT_PTR {
+			switch (message)
+			{
+			case WM_INITDIALOG:
+			{
+				HWND hwndOwner = GetParent(hWnd);
+				RECT rc, rcDlg, rcOwner;
+
+				GetWindowRect(hwndOwner, &rcOwner);
+				GetWindowRect(hWnd, &rcDlg);
+				CopyRect(&rc, &rcOwner);
+
+				// Offset the owner and dialog box rectangles so that right and bottom 
+				// values represent the width and height, and then offset the owner again 
+				// to discard space taken up by the dialog box. 
+
+				OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top);
+				OffsetRect(&rc, -rc.left, -rc.top);
+				OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom);
+
+				// The new position is the sum of half the remaining space and the owner's 
+				// original position. 
+
+				SetWindowPos(hWnd,
+					HWND_TOP,
+					rcOwner.left + (rc.right / 2),
+					rcOwner.top + (rc.bottom / 2),
+					0, 0,          // Ignores size arguments. 
+					SWP_NOSIZE);
+
+				if (GetDlgCtrlID((HWND)wParam) != IDC_CAPTION_GOTO_EDIT)
+				{
+					SetFocus(GetDlgItem(hWnd, IDC_CAPTION_GOTO_EDIT));
+					return FALSE;
+				}
+				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, std::to_wstring((int)lParam).c_str());
+				return true;
+			}
+			case WM_COMMAND:
+			{
+				int wmId = LOWORD(wParam);
+				switch (wmId)
+				{
+				case IDOK:
+				{
+					int n = -1;
+					WCHAR str[255];
+					GetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, str, 255);
+					try
+					{
+						n = std::stoi(str);
+					}
+					catch (std::exception e) {}
+					return EndDialog(hWnd, n);
+					break;
+				}
+				case IDCANCEL:
+					return EndDialog(hWnd, 0);
+				}
+				break;
+			}
+			case WM_CLOSE:
+				EndDialog(hWnd, 0);
+				break;
+			}
+			return 0;
+		}, (n_selLine == -1 ? 1 : n_selLine + 1));
+		bPauseKBHook = false;
+
+		if (vecBuff.size() <= goto_num - 1) break;
+		n_selLine = goto_num - 1;
+
+		bBypass = false;
+		strText = vecBuff[n_selLine];
+		typeNum = 0;
+		break;
+	}
 	default:
 		return BaseFrame::OnCommand(wParam, lParam);
 	}
@@ -165,6 +245,8 @@ LRESULT CaptionFrame::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 	if (nCode >= 0)
 	{
 		PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
+
+		if (bPauseKBHook) return false;
 
 		switch (wParam)
 		{

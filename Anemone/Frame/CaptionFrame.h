@@ -4,6 +4,7 @@
 class CaptionFrame : public BaseFrame
 {
 	bool bBypass;
+	bool bPauseKBHook;
 	int n_selLine;
 
 	size_t typeNum;
