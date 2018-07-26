@@ -96,6 +96,7 @@ bool ClipboardFrame::OnDrawClipboard()
 
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
 	{
+		CloseClipboard();
 		return false;
 	}
 
