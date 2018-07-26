@@ -113,9 +113,10 @@ bool CaptionFrame::OnRender()
 {
 	context->clear(SK_ColorTRANSPARENT);
 
-	if (bBypass)
+	if (!text_speed || bBypass)
 	{
 		strBuff = strText;
+		typeNum = strBuff.length() + 1;
 	}
 	else
 	{
