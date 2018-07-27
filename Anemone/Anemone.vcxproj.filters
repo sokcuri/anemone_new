@@ -47,6 +47,13 @@
     <ClCompile Include="Utility\RawSize.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="MouseHook.cpp">
+      <Filter>Source Files\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseHook.cpp" />
+    <ClCompile Include="KeyboardHook.cpp">
+      <Filter>Source Files\Hook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -102,6 +109,13 @@
     <ClInclude Include="Frame\TranslateFrame.h">
       <Filter>Header Files\Frame</Filter>
     </ClInclude>
+    <ClInclude Include="MouseHook.h">
+      <Filter>Header Files\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseHook.h" />
+    <ClInclude Include="KeyboardHook.h">
+      <Filter>Header Files\Hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Anemone.ico">
@@ -135,6 +149,12 @@
     </Filter>
     <Filter Include="Source Files\Utility">
       <UniqueIdentifier>{dbb1a126-0dcb-42b1-92b4-e16fd53a7e42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hook">
+      <UniqueIdentifier>{abcec37b-e584-4895-8b3a-3e6dfbb16b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hook">
+      <UniqueIdentifier>{b4412e1d-f218-44e6-90c3-e1b723286fd9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

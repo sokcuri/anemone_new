@@ -170,6 +170,8 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BaseHook.h" />
+    <ClInclude Include="KeyboardHook.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="Frame\BaseFrame.h" />
     <ClInclude Include="Frame\CaptionFrame.h" />
@@ -179,6 +181,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClInclude Include="LayeredWindow\LayeredContext.h" />
     <ClInclude Include="LayeredWindow\LayeredWindow.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="MouseHook.h" />
     <ClInclude Include="ScrollDialog.h" />
     <ClInclude Include="DisplayParams.h" />
     <ClInclude Include="Resource.h" />
@@ -191,6 +194,8 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClInclude Include="Utility\RawSize.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BaseHook.cpp" />
+    <ClCompile Include="KeyboardHook.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="Frame\BaseFrame.cpp" />
     <ClCompile Include="Frame\CaptionFrame.cpp" />
@@ -200,6 +205,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClCompile Include="LayeredWindow\LayeredContext.cpp" />
     <ClCompile Include="LayeredWindow\LayeredWindow.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="MouseHook.cpp" />
     <ClCompile Include="ScrollDialog.cpp" />
     <ClCompile Include="SettingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">

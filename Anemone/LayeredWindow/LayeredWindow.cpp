@@ -10,6 +10,9 @@ LayeredWindow::LayeredWindow()
 
 LayeredWindow::~LayeredWindow()
 {
+	if (lastWindow == this) lastWindow = nullptr;
+	delete this->buffer;
+	delete this->context;
 	DeleteCriticalSection(&cs);
 	CloseWindow(handle);
 }
@@ -30,88 +33,60 @@ void LayeredWindow::Initialize()
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));;
 }
 
+void LayeredWindow::StartEventCapture()
+{
+	RAWINPUTDEVICE rawInputDev[2];
+	ZeroMemory(rawInputDev, sizeof(RAWINPUTDEVICE) * 2);
+
+	// 키보드 RAWINPUTDEVICE 구조체 설정 
+	rawInputDev[0].usUsagePage = 0x01;
+	rawInputDev[0].usUsage = 0x06;
+	rawInputDev[0].dwFlags = RIDEV_INPUTSINK;
+	rawInputDev[0].hwndTarget = handle;
+
+	//마우스 RAWINPUTDEVICE 구조체 설정
+	rawInputDev[1].usUsagePage = 0x01;
+	rawInputDev[1].usUsage = 0x02;
+	rawInputDev[1].dwFlags = RIDEV_INPUTSINK;
+	rawInputDev[1].hwndTarget = handle;
+
+	if (FALSE == RegisterRawInputDevices(rawInputDev, 2, sizeof(RAWINPUTDEVICE)))
+	{
+		std::wstring str;
+		OutputDebugString(L"RegisterRawInputDevices Error %d");
+	}
+
+}
+
+
+
+void LayeredWindow::EndEventCapture()
+{
+	RAWINPUTDEVICE rawInputDev[2];
+	ZeroMemory(rawInputDev, sizeof(RAWINPUTDEVICE) * 2);
+
+	// 키보드 RAWINPUTDEVICE 구조체 설정 
+	rawInputDev[0].usUsagePage = 0x01;
+	rawInputDev[0].usUsage = 0x06;
+	rawInputDev[0].dwFlags = RIDEV_REMOVE;
+	rawInputDev[0].hwndTarget = handle;
+
+	//마우스 RAWINPUTDEVICE 구조체 설정
+	rawInputDev[1].usUsagePage = 0x01;
+	rawInputDev[1].usUsage = 0x02;
+	rawInputDev[1].dwFlags = RIDEV_REMOVE;
+	rawInputDev[1].hwndTarget = handle;
+
+	if (FALSE == RegisterRawInputDevices(rawInputDev, 2, sizeof(RAWINPUTDEVICE)))
+	{
+		std::wstring str;
+		OutputDebugString(L"RegisterRawInputDevices Error %d");
+	}
+
+}
 bool LayeredWindow::OnCreate()
 {
-	DWORD dwThreadID;
-
-	m_hMHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
-		LayeredWindow *p = (LayeredWindow *)pData;
-		static HWND m_hWnd;
-		m_hWnd = (HWND)p->handle;
-		p->m_hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
-		{
-			if (nCode == HC_ACTION)
-			{
-				POINT *lp = (POINT *)lParam;
-
-				HWND hMenuWnd = FindWindow(L"#32768", L"AnemoneContextMenu");
-				DWORD processId;
-				DWORD actualProcId = GetWindowThreadProcessId(hMenuWnd, &processId);
-
-				if (processId == GetCurrentProcessId())
-				{
-					RECT r;
-					GetWindowRect(hMenuWnd, &r);
-					if (!(lp->x >= r.left && lp->x <= r.right && lp->y >= r.top && lp->y <= r.bottom))
-					{
-						if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN)
-						{
-							ShowWindow(hMenuWnd, false);
-							CloseWindow(hMenuWnd);
-						}
-					}
-				}
-			}
-			return ::CallNextHookEx(nullptr, nCode, wParam, lParam);
-		}, nullptr, NULL);
-		if (!p->m_hMouseHook)
-			MessageBox(0, L"Mouse hook failed", 0, 0);
-
-		MSG msg;
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			if (!TranslateAccelerator(msg.hwnd, 0, &msg))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-		return (int)msg.wParam;
-	}, (void *)this, 0, (unsigned*)&dwThreadID);
-
-	if (m_hMHThread == 0) MessageBox(0, L"MenuThread Error\n", 0, 0);
-
-	m_hKHThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
-		static LayeredWindow *p;
-		p = (LayeredWindow *)pData;
-
-		static HWND m_hWnd;
-		m_hWnd = (HWND)pData;
-		
-		static int mode;
-		mode = p->m_mode;
-
-		p->m_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
-		{
-			return p->KeyboardHookProc(nCode, wParam, lParam);
-		}, nullptr, NULL);
-		if (!p->m_hKeyboardHook)
-			MessageBox(0, L"Keyboard hook failed", 0, 0);
-
-		MSG msg;
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			if (!TranslateAccelerator(msg.hwnd, 0, &msg))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-		return (int)msg.wParam;
-	}, (void *)this, 0, (unsigned*)&dwThreadID);
-
-	if (m_hKHThread == 0) MessageBox(0, L"m_hHotkeyThread Error\n", 0, 0);
-	return 0;
+	return true;
 }
 
 template<typename Base, typename T>
@@ -164,6 +139,11 @@ bool LayeredWindow::OnDestroyClipboard()
 	return false;
 }
 
+bool LayeredWindow::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
+{
+	return false;
+}
+
 LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -171,6 +151,68 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WM_USER + 100:
 		OnFirstProc();
 		break;
+	case WM_USER + 200:
+		return OnKeyboardHookProc(wParam, lParam);
+	case WM_INPUT:
+	{
+		UINT dwSize = 40;
+		static BYTE lpb[40];
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+
+		if (raw->header.dwType == RIM_TYPEMOUSE)
+		{
+			int xPosRelative = raw->data.mouse.lLastX;
+			int yPosRelative = raw->data.mouse.lLastY;
+			if (raw->data.mouse.ulButtons == 0) // move
+			{
+				OutputDebugString(L"mouse move\n");
+			}
+			else
+				if (raw->data.mouse.ulButtons == 1 /*|| m_bLbuttonDragging*/) // l-button down 
+				{
+					OutputDebugString(L"l-button down\n");
+				}
+			if (raw->data.mouse.ulButtons == 2) // l-button up
+			{
+				OutputDebugString(L"l-button up\n");
+			}
+
+			if (raw->data.mouse.ulButtons == 4) // r-button down
+			{
+				OutputDebugString(L"r-button down\n");
+			}
+
+			if (raw->data.mouse.ulButtons == 8) // r-button down
+			{
+				OutputDebugString(L"r-button up\n");
+			}
+
+		}
+
+		if (raw->header.dwType == RIM_TYPEKEYBOARD)
+		{
+			WCHAR str[255];
+			swprintf_s(str, L" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n",
+				raw->data.keyboard.MakeCode,
+				raw->data.keyboard.Flags,
+				raw->data.keyboard.Reserved,
+				raw->data.keyboard.ExtraInformation,
+				raw->data.keyboard.Message,
+				raw->data.keyboard.VKey);
+
+			MSG msg;
+			memset(&msg, 0, sizeof(MSG));
+			msg.hwnd = hWnd;
+			msg.message = raw->data.keyboard.Message;
+			msg.wParam = raw->data.keyboard.VKey;
+
+			// KeyMessageProcessing( &msg );
+
+			OutputDebugString(str);
+		}
+		break;
+	}
 	case WM_CREATE:
 	{
 		PostMessage(hWnd, WM_USER + 100, 0, 0);
@@ -355,8 +397,10 @@ void LayeredWindow::Resize(int width, int height)
 	context = new LayeredContext(handle, buffer);
 }
 
-void LayeredWindow::Create()
+bool LayeredWindow::Create()
 {
+	if (lastWindow) return false;
+
 	std::wstring temp_class_name = std::to_wstring(GetTickCount());
 	wcex.lpszClassName = temp_class_name.c_str();
 	RegisterClassExW(&wcex);
@@ -367,7 +411,7 @@ void LayeredWindow::Create()
 	if (!handle)
 	{
 		MessageBox(0, L"창 생성에 실패했습니다", 0, MB_ICONERROR);
-		return; 
+		return false; 
 	}
 
 	ShowWindow(handle, true);
@@ -390,17 +434,15 @@ void LayeredWindow::Create()
 	context->SetPosition(x, y);
 
 	thread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
-		auto p = reinterpret_cast<LayeredWindow *>(pData);
-
-		while (1)
+		while (lastWindow)
 		{
-			p->fps.Update();
+			lastWindow->fps.Update();
 
-			EnterCriticalSection(&p->cs);
-			p->OnRender();
-			LeaveCriticalSection(&p->cs);
+			EnterCriticalSection(&lastWindow->cs);
+			lastWindow->OnRender();
+			LeaveCriticalSection(&lastWindow->cs);
 
-			p->context->Present();
+			lastWindow->context->Present();
 			Sleep(1);
 		}
 		return 0;
@@ -411,11 +453,12 @@ void LayeredWindow::Create()
 	if (thread == 0)
 	{
 		MessageBox(0, L"Thread Create Error\n", 0, 0);
-		return;
+		return false;
 	}
 
 	HACCEL hAccelTable = /*LoadAccelerators(nullptr, MAKEINTRESOURCE(IDC_ANEMONE));*/ nullptr;
 	MSG msg;
+	lastWindow = this;
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -424,6 +467,7 @@ void LayeredWindow::Create()
 			DispatchMessage(&msg);
 		}
 	}
+	return true;
 }
 
 bool LayeredWindow::OnRender()

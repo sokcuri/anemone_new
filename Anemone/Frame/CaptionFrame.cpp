@@ -13,7 +13,6 @@ CaptionFrame::CaptionFrame()
 	typeNum = 0;
 }
 
-
 CaptionFrame::~CaptionFrame()
 {
 }
@@ -129,7 +128,6 @@ bool CaptionFrame::OnRender()
 		if (typeNum <= strText.length())
 		{
 			milli_duration duration = system_clock::now() - lastTime;
-			OutputDebugString(std::to_wstring(duration.count()).c_str());
 			if (duration.count() > text_speed)
 			{
 				strBuff = strText.substr(0, typeNum++);
@@ -162,6 +160,8 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 			{
 			case WM_INITDIALOG:
 			{
+				auto p = reinterpret_cast<BaseFrame *>(lParam);
+				int line = (p->n_selLine == -1 ? 1 : p->n_selLine + 1);
 				HWND hwndOwner = GetParent(hWnd);
 				RECT rc, rcDlg, rcOwner;
 
@@ -193,12 +193,12 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 					SetFocus(GetDlgItem(hWnd, IDC_CAPTION_GOTO_EDIT));
 					return FALSE;
 				}
-				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, std::to_wstring((int)lParam).c_str());
+				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, std::to_wstring(line).c_str());
 
 				std::wstring s;
 				s = L"ÁÙ ¹øÈ£";
 				s += L"(1 - ";
-				s += std::to_wstring(vecBuff.size());
+				s += std::to_wstring((p->vecBuff.size() ? p->vecBuff.size() : 1));
 				s += L"): ";
 				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_STATIC, s.c_str());
 				return true;
@@ -231,7 +231,7 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 				break;
 			}
 			return 0;
-		}, (n_selLine == -1 ? 1 : n_selLine + 1));
+		}, reinterpret_cast<LPARAM>(this));
 		bPauseKBHook = false;
 
 		if (vecBuff.size() <= goto_num - 1) break;
@@ -248,46 +248,42 @@ bool CaptionFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 	return true;
 }
 
-LRESULT CaptionFrame::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+bool CaptionFrame::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
 {
-	if (nCode >= 0)
+	PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
+	if (bPauseKBHook) return false;
+
+	switch (wParam)
 	{
-		PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
+	case 256:	// WM_KEYDOWN
+	case 260:	// WM_SYSKEYDOWN
 
-		if (bPauseKBHook) return false;
-
-		switch (wParam)
+		if (pHookKey->vkCode == VK_PRIOR)
 		{
-		case 256:	// WM_KEYDOWN
-		case 260:	// WM_SYSKEYDOWN
-
-			if (pHookKey->vkCode == VK_PRIOR)
-			{
-				if (!n_selLine || n_selLine == -1) break;
-				bBypass = false;
-				strText = vecBuff[--n_selLine];
-				typeNum = 0;
-				return true;
-			}
-			else if (pHookKey->vkCode == VK_NEXT)
-			{
-				if (n_selLine >= 0 && typeNum != strText.length() + 1)
-				{
-					bBypass = true;
-					typeNum = strText.length() + 1;
-					strText = vecBuff[n_selLine];
-					return true;
-				}
-
-				bBypass = false;
-				if (n_selLine + 1 == vecBuff.size()) break;
-				strText = vecBuff[++n_selLine];
-				typeNum = 0;
-				return true;
-			}
-			break;
+			if (!n_selLine || n_selLine == -1) break;
+			bBypass = false;
+			strText = vecBuff[--n_selLine];
+			typeNum = 0;
+			return true;
 		}
+		else if (pHookKey->vkCode == VK_NEXT)
+		{
+			if (n_selLine >= 0 && typeNum != strText.length() + 1)
+			{
+				bBypass = true;
+				typeNum = strText.length() + 1;
+				strText = vecBuff[n_selLine];
+				return true;
+			}
+
+			bBypass = false;
+			if (n_selLine + 1 == vecBuff.size()) break;
+			strText = vecBuff[++n_selLine];
+			typeNum = 0;
+			return true;
+		}
+		break;
 	}
-	return ::CallNextHookEx(nullptr, nCode, wParam, lParam);
+	return false;
 }
 

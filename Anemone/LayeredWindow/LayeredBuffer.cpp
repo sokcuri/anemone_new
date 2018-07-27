@@ -12,6 +12,9 @@ LayeredBuffer::LayeredBuffer(int width, int height, SkColorType colorType, SkAlp
 
 LayeredBuffer::~LayeredBuffer()
 {
+	ReleaseResources();
+	delete bitmap;
+	delete size;
 }
 
 SkColorType LayeredBuffer::GetColorType()

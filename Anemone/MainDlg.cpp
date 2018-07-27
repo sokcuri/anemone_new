@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "MainDlg.h"
 #include "Anemone.h"
+#include "CaptionFrame.h"
+#include "ClipboardFrame.h"
+#include "TranslateFrame.h"
 #include "SettingDlg.h"
 
 namespace MainDlg
@@ -32,11 +35,12 @@ namespace MainDlg
 			int wmId = LOWORD(wParam);
 			switch (wmId)
 			{
-			case ID_CLIPMODE:
 			case ID_CAPTIONMODE:
+			case ID_CLIPMODE:
 			case ID_TRANSMODE:
 			case ID_SETTING:
-				return EndDialog(hWnd, wmId);
+				EndDialog(hWnd, wmId);
+				break;
 			}
 			break;
 		}
