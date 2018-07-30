@@ -3,13 +3,13 @@
 
 ClipboardFrame::ClipboardFrame()
 {
+	m_mode = CLIPBOARD_MODE;
+	m_title = L"(Clipboard Mode)";
+
 	bBypass = false;
 
 	bFirst = true;
 	bStart = false;
-
-	m_mode = CLIPBOARD_MODE;
-	m_title = L"(Clipboard Mode)";
 	typeNum = 0;
 }
 
