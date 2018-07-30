@@ -2,6 +2,8 @@
 #include "LayeredWindow.h"
 #include "BaseFrame.h"
 
+LayeredWindow *LayeredWindow::lastWindow = nullptr;
+
 LayeredWindow::LayeredWindow()
 {
 	InitializeCriticalSection(&cs);
@@ -33,65 +35,9 @@ void LayeredWindow::Initialize()
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));;
 }
 
-void LayeredWindow::StartEventCapture()
-{
-	RAWINPUTDEVICE rawInputDev[2];
-	ZeroMemory(rawInputDev, sizeof(RAWINPUTDEVICE) * 2);
-
-	// 키보드 RAWINPUTDEVICE 구조체 설정 
-	rawInputDev[0].usUsagePage = 0x01;
-	rawInputDev[0].usUsage = 0x06;
-	rawInputDev[0].dwFlags = RIDEV_INPUTSINK;
-	rawInputDev[0].hwndTarget = handle;
-
-	//마우스 RAWINPUTDEVICE 구조체 설정
-	rawInputDev[1].usUsagePage = 0x01;
-	rawInputDev[1].usUsage = 0x02;
-	rawInputDev[1].dwFlags = RIDEV_INPUTSINK;
-	rawInputDev[1].hwndTarget = handle;
-
-	if (FALSE == RegisterRawInputDevices(rawInputDev, 2, sizeof(RAWINPUTDEVICE)))
-	{
-		std::wstring str;
-		OutputDebugString(L"RegisterRawInputDevices Error %d");
-	}
-
-}
-
-
-
-void LayeredWindow::EndEventCapture()
-{
-	RAWINPUTDEVICE rawInputDev[2];
-	ZeroMemory(rawInputDev, sizeof(RAWINPUTDEVICE) * 2);
-
-	// 키보드 RAWINPUTDEVICE 구조체 설정 
-	rawInputDev[0].usUsagePage = 0x01;
-	rawInputDev[0].usUsage = 0x06;
-	rawInputDev[0].dwFlags = RIDEV_REMOVE;
-	rawInputDev[0].hwndTarget = handle;
-
-	//마우스 RAWINPUTDEVICE 구조체 설정
-	rawInputDev[1].usUsagePage = 0x01;
-	rawInputDev[1].usUsage = 0x02;
-	rawInputDev[1].dwFlags = RIDEV_REMOVE;
-	rawInputDev[1].hwndTarget = handle;
-
-	if (FALSE == RegisterRawInputDevices(rawInputDev, 2, sizeof(RAWINPUTDEVICE)))
-	{
-		std::wstring str;
-		OutputDebugString(L"RegisterRawInputDevices Error %d");
-	}
-
-}
 bool LayeredWindow::OnCreate()
 {
 	return true;
-}
-
-template<typename Base, typename T>
-inline bool Instanceof(const T *ptr) {
-	return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
 LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -102,7 +48,7 @@ LRESULT LayeredWindow::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 	{
 	case WM_NCCREATE:
 	{
-		auto p = reinterpret_cast<LayeredWindow *>(((CREATESTRUCT*)lParam)->lpCreateParams);
+		auto p = reinterpret_cast<LayeredWindow *>((reinterpret_cast<CREATESTRUCT *>(lParam))->lpCreateParams);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(p));
 
 		if (!p->handle) p->handle = hWnd;
@@ -149,70 +95,9 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	switch (message)
 	{
 	case WM_USER + 100:
-		OnFirstProc();
-		break;
+		return OnFirstProc();
 	case WM_USER + 200:
 		return OnKeyboardHookProc(wParam, lParam);
-	case WM_INPUT:
-	{
-		UINT dwSize = 40;
-		static BYTE lpb[40];
-		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-		RAWINPUT* raw = (RAWINPUT*)lpb;
-
-		if (raw->header.dwType == RIM_TYPEMOUSE)
-		{
-			int xPosRelative = raw->data.mouse.lLastX;
-			int yPosRelative = raw->data.mouse.lLastY;
-			if (raw->data.mouse.ulButtons == 0) // move
-			{
-				OutputDebugString(L"mouse move\n");
-			}
-			else
-				if (raw->data.mouse.ulButtons == 1 /*|| m_bLbuttonDragging*/) // l-button down 
-				{
-					OutputDebugString(L"l-button down\n");
-				}
-			if (raw->data.mouse.ulButtons == 2) // l-button up
-			{
-				OutputDebugString(L"l-button up\n");
-			}
-
-			if (raw->data.mouse.ulButtons == 4) // r-button down
-			{
-				OutputDebugString(L"r-button down\n");
-			}
-
-			if (raw->data.mouse.ulButtons == 8) // r-button down
-			{
-				OutputDebugString(L"r-button up\n");
-			}
-
-		}
-
-		if (raw->header.dwType == RIM_TYPEKEYBOARD)
-		{
-			WCHAR str[255];
-			swprintf_s(str, L" Kbd: make=%04x Flags:%04x Reserved:%04x ExtraInformation:%08x, msg=%04x VK=%04x \n",
-				raw->data.keyboard.MakeCode,
-				raw->data.keyboard.Flags,
-				raw->data.keyboard.Reserved,
-				raw->data.keyboard.ExtraInformation,
-				raw->data.keyboard.Message,
-				raw->data.keyboard.VKey);
-
-			MSG msg;
-			memset(&msg, 0, sizeof(MSG));
-			msg.hwnd = hWnd;
-			msg.message = raw->data.keyboard.Message;
-			msg.wParam = raw->data.keyboard.VKey;
-
-			// KeyMessageProcessing( &msg );
-
-			OutputDebugString(str);
-		}
-		break;
-	}
 	case WM_CREATE:
 	{
 		PostMessage(hWnd, WM_USER + 100, 0, 0);
@@ -226,15 +111,11 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		break;
 	}
 	case WM_CHANGECBCHAIN:
-		OutputDebugString(L"WM_CHANGECBCHAIN\n");
 		return OnChangeCbChain(wParam, lParam);
 	case WM_DRAWCLIPBOARD:
-		OutputDebugString(L"WM_DRAWCLIPBOARD\n");
 		return OnDrawClipboard();
 	case WM_DESTROYCLIPBOARD:
-		OutputDebugString(L"WM_DESTROYCLIPBOARD\n");
 		return OnDestroyClipboard();
-		break;
 	case WM_ERASEBKGND:
 	case WM_PAINT:
 		return false;
@@ -342,7 +223,6 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 			MessageBox(0, L"CBTHook Error", 0, 0);
 
 		TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
-
 		UnhookWindowsHookEx(hCBTHook);
 		break;
 	}
@@ -354,36 +234,6 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 LRESULT LayeredWindow::KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if (nCode >= 0)
-	{
-		PKBDLLHOOKSTRUCT pHookKey = (PKBDLLHOOKSTRUCT)lParam;
-
-		switch (wParam)
-		{
-		case 256:	// WM_KEYDOWN
-		case 260:	// WM_SYSKEYDOWN
-/*
-			if (pHookKey->vkCode == VK_NUMPAD9)
-			{
-				if (m_mode == CAPTION_MODE)
-				{
-					if (!n_selLine) break;
-					strBuff = vecBuff[--n_selLine];
-					SendMessage(handle, WM_PAINT, 0, 0);
-				}
-			}
-			else if (pHookKey->vkCode == VK_NUMPAD3)
-			{
-				if (m_mode == CAPTION_MODE)
-				{
-					if (n_selLine + 1 == vecBuff.size()) break;
-					strBuff = vecBuff[++n_selLine];
-					SendMessage(handle, WM_PAINT, 0, 0);
-				}
-			}*/
-			break;
-		}
-	}
 	return ::CallNextHookEx(nullptr, nCode, wParam, lParam);
 }
 
@@ -456,7 +306,7 @@ bool LayeredWindow::Create()
 		return false;
 	}
 
-	HACCEL hAccelTable = /*LoadAccelerators(nullptr, MAKEINTRESOURCE(IDC_ANEMONE));*/ nullptr;
+	HACCEL hAccelTable = nullptr;
 	MSG msg;
 	lastWindow = this;
 	while (GetMessage(&msg, nullptr, 0, 0))
@@ -484,7 +334,6 @@ bool LayeredWindow::OnRender()
 
 	paint.reset();
 	paint.setAntiAlias(true);
-	//paint.setTextEncoding(SkPaint::kUTF16_TextEncoding);
 	paint.setColor(SkColorSetRGB(0, 0, 0));
 	paint.setTextSize(18.0f);
 	paint.setTextAlign(SkPaint::Align::kRight_Align);

@@ -4,7 +4,7 @@ class BaseHook
 public:
 	HHOOK hHook;
 	BaseHook();
-	~BaseHook();
+	virtual ~BaseHook();
 
 	virtual bool Install() = 0;
 };

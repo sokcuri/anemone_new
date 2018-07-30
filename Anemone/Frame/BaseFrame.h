@@ -1,5 +1,4 @@
 #pragma once
-#include "../SettingDlg.h"
 #include "LayeredWindow.h"
 #include "SKRRect.h"
 #include "SKString.h"

@@ -1,6 +1,6 @@
 #pragma once
-#include "../Anemone.h"
-#include "../resource.h"
+#include "Anemone.h"
+#include "resource.h"
 #include "RawPoint.h"
 #include "RawSize.h"
 #include "LayeredBuffer.h"
@@ -11,31 +11,20 @@
 class LayeredWindow
 {
 	CRITICAL_SECTION cs;
-
 	std::wstring title;
-
 	FPSCounter fps;
 	HANDLE thread;
-
 	bool onMouse = false;
 	RECT mouseRect;
 public:
-	RawPoint position;
-	RawSize size;
-
-	WNDCLASSEXW wcex;
+	static LayeredWindow *lastWindow;
 
 	HWND handle;
-	LayeredBuffer *buffer;
-	LayeredContext *context;
-
-	std::vector<std::wstring> vecBuff;
 	int n_selLine;
-
-	std::wstring strBuff;
+	std::vector<std::wstring> vecBuff;
 
 	LayeredWindow();
-	~LayeredWindow();
+	virtual ~LayeredWindow();
 
 	bool Create();
 	void Resize(int width, int height);
@@ -53,13 +42,21 @@ public:
 	virtual LRESULT KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 protected:
+	RawPoint position;
+	RawSize size;
+
+	LayeredBuffer *buffer;
+	LayeredContext *context;
+
 	int m_mode = 0;
+	WNDCLASSEXW wcex;
+
+
+	std::wstring strBuff;
 
 private:
 	void Initialize();
-
 	void StartEventCapture();
-
 	static LRESULT _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

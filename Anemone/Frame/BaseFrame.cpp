@@ -219,7 +219,7 @@ bool BaseFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 	case IDM_SETTING:
 		HWND hSettingWnd;
-		hSettingWnd = CreateDialog(nullptr, MAKEINTRESOURCE(IDD_SETTING), handle, (DLGPROC)SettingDlg::DlgProc);
+		hSettingWnd = CreateDialog(nullptr, MAKEINTRESOURCE(IDD_SETTING), handle, (DLGPROC)SettingDlgProc);
 		ShowWindow(hSettingWnd, SW_SHOW);
 		break;
 	case IDM_EXIT:
@@ -230,17 +230,3 @@ bool BaseFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 	return true;
 }
-/*
-LRESULT AnemoneFrame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	//OutputDebugString(L"AnemoneFrame::WndProc\n");
-	switch (message)
-	{
-	case WM_COMMAND:
-		if (OnCommand(wParam, lParam))
-			return true;
-	}
-
-	return LayeredWindow::WndProc(hWnd, message, wParam, lParam);
-}
-*/
