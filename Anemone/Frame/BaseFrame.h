@@ -17,7 +17,7 @@ public:
 	BaseFrame();
 	~BaseFrame();
 
-	std::wstring advTitle;
+	std::wstring m_title;
 	std::wstring strText;
 
 	RawSize GetWindowSize();

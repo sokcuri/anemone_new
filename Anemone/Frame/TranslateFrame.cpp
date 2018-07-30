@@ -1,13 +1,11 @@
 #include "stdafx.h"
 #include "TranslateFrame.h"
 
-
 TranslateFrame::TranslateFrame()
 {
 	m_mode = TRANSLATE_MODE;
-	advTitle = L"(Translate Mode)";
+	m_title = L"(Translate Mode)";
 }
-
 
 TranslateFrame::~TranslateFrame()
 {
@@ -16,9 +14,7 @@ TranslateFrame::~TranslateFrame()
 bool TranslateFrame::OnRender()
 {
 	context->clear(SK_ColorTRANSPARENT);
-	wchar_t str[255];
-	swprintf_s(str, L"time: %lld", GetTickCount64());
-	strBuff = str;
+	strBuff = fmt::format(L"time: {0}", GetTickCount64());
 
 	LayeredWindow::OnRender();
 	DrawSysMenu();

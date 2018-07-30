@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "MouseHook.h"
 
-
 MouseHook::MouseHook()
 {
 }
-
 
 MouseHook::~MouseHook()
 {

@@ -9,7 +9,7 @@ ClipboardFrame::ClipboardFrame()
 	bStart = false;
 
 	m_mode = CLIPBOARD_MODE;
-	advTitle = L"(Clipboard Mode)";
+	m_title = L"(Clipboard Mode)";
 	typeNum = 0;
 }
 
@@ -89,9 +89,8 @@ bool ClipboardFrame::OnDrawClipboard()
 
 	if (!success)
 	{
-		wchar_t str[255];
-		swprintf_s(str, L"cannot open clipboard: %d\n", GetLastError());
-		OutputDebugString(str);
+		auto text = fmt::format(L"cannot open clipboard : %d\n", GetLastError());
+		OutputDebugString(text.c_str());
 		return false;
 	}
 

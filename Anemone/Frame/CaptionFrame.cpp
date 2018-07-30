@@ -9,7 +9,7 @@ CaptionFrame::CaptionFrame()
 	n_selLine = -1;
 
 	m_mode = CAPTION_MODE;
-	advTitle = L"(Caption Mode)";
+	m_title = L"(Caption Mode)";
 	typeNum = 0;
 }
 

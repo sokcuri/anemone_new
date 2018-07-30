@@ -25,9 +25,6 @@ void FPSCounter::Update()
 
 std::string FPSCounter::ToString()
 {
-	std::string str;
-	str = std::to_string(lastFps);
-	str += "fps";
-	return str;
+	return fmt::format("{0}fps", lastFps);
 }
 

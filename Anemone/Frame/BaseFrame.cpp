@@ -7,7 +7,6 @@ BaseFrame::BaseFrame()
 	strText = L"¾Æ³×¸ð³× v2.0 by ¼ÒÄí¸´";
 }
 
-
 BaseFrame::~BaseFrame()
 {
 }
@@ -57,7 +56,7 @@ void BaseFrame::DrawSysMenu()
 
 	std::wstring title = g_Version;
 	title += L" ";
-	title += advTitle;
+	title += m_title;
 	title += L" - ";
 	title += g_BuildInfo;
 

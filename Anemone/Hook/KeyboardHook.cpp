@@ -2,11 +2,9 @@
 #include "KeyboardHook.h"
 #include "LayeredWindow.h"
 
-
 KeyboardHook::KeyboardHook()
 {
 }
-
 
 KeyboardHook::~KeyboardHook()
 {
