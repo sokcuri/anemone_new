@@ -1,0 +1,3 @@
+[submodule "third_party/ithvnr"]
+	path = third_party/ithvnr
+	url = https://github.com/sokcuri/ithvnr
