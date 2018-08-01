@@ -75,6 +75,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
+    <IntDir>Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Dist\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -83,6 +85,8 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
+    <IntDir>Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Dist\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -101,6 +105,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;skia.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>echo | set /p dummyName=#define GIT_CUR_COMMIT &gt;  gitparams.h
@@ -141,7 +146,8 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;skia.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;skia.lib;ntdll.lib;version.lib;comctl32.lib;ithvnr.lib;vnrhost.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>echo | set /p dummyName=#define GIT_CUR_COMMIT &gt;  gitparams.h
@@ -173,6 +179,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClInclude Include="Frame\BaseFrame.h" />
     <ClInclude Include="Frame\CaptionFrame.h" />
     <ClInclude Include="Frame\ClipboardFrame.h" />
+    <ClInclude Include="Frame\HookerFrame.h" />
     <ClInclude Include="Frame\TranslateFrame.h" />
     <ClInclude Include="Hook\BaseHook.h" />
     <ClInclude Include="Hook\KeyboardHook.h" />
@@ -195,6 +202,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClCompile Include="Frame\BaseFrame.cpp" />
     <ClCompile Include="Frame\CaptionFrame.cpp" />
     <ClCompile Include="Frame\ClipboardFrame.cpp" />
+    <ClCompile Include="Frame\HookerFrame.cpp" />
     <ClCompile Include="Frame\TranslateFrame.cpp" />
     <ClCompile Include="Hook\BaseHook.cpp" />
     <ClCompile Include="Hook\KeyboardHook.cpp" />

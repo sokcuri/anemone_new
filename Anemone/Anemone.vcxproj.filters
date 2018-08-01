@@ -50,6 +50,9 @@
     <ClCompile Include="..\third_party\fmt\format.cc">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Frame\HookerFrame.cpp">
+      <Filter>Source Files\Frame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -104,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="Utility\ConfigManager.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Frame\HookerFrame.h">
+      <Filter>Header Files\Frame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

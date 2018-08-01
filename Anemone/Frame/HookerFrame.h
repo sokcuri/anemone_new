@@ -20,34 +20,26 @@
 **/
 
 #pragma once
-#include "LayeredWindow.h"
-#include "SKRRect.h"
-#include "SKString.h"
-#include "SkFontMgr.h"
-#include "SkTypeface.h"
-#include "SkMaskFilter.h"
-#include "SkBlurMask.h"
+#include "BaseFrame.h"
 
-#define CLIPBOARD_MODE	1
-#define CAPTION_MODE	2
-#define TRANSLATE_MODE	3
-#define HOOKER_MODE		4
-
-class BaseFrame : public LayeredWindow
+class HookerFrame : public BaseFrame
 {
+	bool bBypass;
+	bool bPauseKBHook;
+
+	size_t typeNum;
+	time_point lastTime;
+
+	HANDLE hHookThread;
 public:
-	BaseFrame();
-	~BaseFrame();
+	HookerFrame();
+	~HookerFrame();
+	bool BrowseFile();
+	void DrawLineCount();
 
-	std::wstring m_title;
-	std::wstring strText;
-
-	RawSize GetWindowSize();
-	void DrawSysMenu();
-	void DrawContent();
-
+	virtual bool OnFirstProc();
+	virtual bool OnRender();
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
-
-	//virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	virtual bool OnKeyboardHookProc(WPARAM wParam, LPARAM lParam);
 };
 
