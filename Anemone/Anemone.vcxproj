@@ -225,9 +225,13 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     <ClCompile Include="Utility\RawSize.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\third_party\ithvnr\resources\gui\icon1.ico" />
     <Image Include="Resource\anemone.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\third_party\ithvnr\resources\gui\ITHVNR.rc">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)third_party\ithvnr\include\gui\</AdditionalIncludeDirectories>
+    </ResourceCompile>
     <ResourceCompile Include="Resource\Anemone.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

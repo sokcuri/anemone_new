@@ -50,9 +50,8 @@ public:
 	bool Create();
 	void Resize(int width, int height);
 	virtual bool OnRender();
-	void EndEventCapture();
 	virtual bool OnCreate();
-	virtual bool OnFirstProc();
+	virtual bool OnFirstProc(HWND hWnd);
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual bool OnDestroy();
 	virtual bool OnChangeCbChain(WPARAM wParam, LPARAM lParam);

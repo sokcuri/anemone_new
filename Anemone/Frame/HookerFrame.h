@@ -34,10 +34,13 @@ class HookerFrame : public BaseFrame
 public:
 	HookerFrame();
 	~HookerFrame();
+
+	static INT_PTR CALLBACK HookerStickProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 	bool BrowseFile();
 	void DrawLineCount();
 
-	virtual bool OnFirstProc();
+	virtual bool OnFirstProc(HWND hWnd);
 	virtual bool OnRender();
 	virtual bool OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual bool OnKeyboardHookProc(WPARAM wParam, LPARAM lParam);

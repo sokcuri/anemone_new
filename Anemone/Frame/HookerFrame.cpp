@@ -12,23 +12,82 @@ HookerFrame::HookerFrame()
 	m_title = L"(Hooker Mode)";
 	typeNum = 0;
 
-	ITH_Init();
-	ITH_CleanUp();
-	/*DWORD dwThreadID;
+	DWORD dwThreadID;
 	hHookThread = (HANDLE)_beginthreadex(NULL, 0, [](void* pData) -> unsigned int {
 		::ITH_Init();
 		::ITH_CleanUp();
 		return 0;
 	}, (void *)this, 0, (unsigned*)&dwThreadID);
-	*/
+	
 }
 
 HookerFrame::~HookerFrame()
 {
+	::ITH_CleanUp();
 }
 
-bool HookerFrame::OnFirstProc()
+INT_PTR CALLBACK HookerFrame::HookerStickProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	switch (message)
+	{
+	case WM_INITDIALOG:
+	{
+		RECT rect;
+		GetWindowRect(hWnd, &rect);
+
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+
+		int cx = GetSystemMetrics(SM_CXSCREEN);
+		int cy = GetSystemMetrics(SM_CYSCREEN);
+
+		MoveWindow(hWnd, (cx - width) / 2, (cy - height) / 2, width, height, false);
+		SetWindowText(hWnd, g_AnemoneInfo);
+		break;
+	}
+
+	case WM_LBUTTONDOWN:
+		SendMessage(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+		break;
+	case WM_MOVING:
+	case WM_SIZING:
+	{
+		RECT * rect = (RECT *)lParam;
+		int x = rect->left;
+		int y = rect->top;
+		int w = rect->right - rect->left;
+		int h = rect->bottom - rect->top;
+		SetWindowPos(hWnd, nullptr, x, y, w, h, 0);
+
+		return 0;
+	}
+	case WM_SHOWWINDOW:
+		break;
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		switch (wmId)
+		{
+		case ID_CAPTIONMODE:
+		case ID_CLIPMODE:
+		case ID_TRANSMODE:
+		case ID_HOOKERMODE:
+		case ID_SETTING:
+			EndDialog(hWnd, wmId);
+			break;
+		}
+		break;
+	}
+	case WM_CLOSE:
+		EndDialog(hWnd, 0x12345678);
+		break;
+	}
+	return 0;
+}
+
+bool HookerFrame::OnFirstProc(HWND hWnd)
+{
+	//CreateDialog(nullptr, MAKEINTRESOURCE(IDD_HOOKER_STICK), nullptr, (DLGPROC)HookerFrame::HookerStickProc);
 	BrowseFile();
 	return true;
 }
@@ -107,99 +166,12 @@ bool HookerFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 	int wmId = LOWORD(wParam);
 	switch (wmId)
 	{
-	case IDM_CAPTION_BROWSE:
-		BrowseFile();
+	case IDM_HOOKER_PROCESS:
+		ITH_OpenDialog(ITH_PROCESS_DLG);
 		break;
-	case IDM_CAPTION_GOTO:
-	{
-		bPauseKBHook = true;
-		size_t goto_num = DialogBoxParam(nullptr, MAKEINTRESOURCE(IDD_CAPTION_GOTO), handle, [](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> INT_PTR {
-			switch (message)
-			{
-			case WM_INITDIALOG:
-			{
-				auto p = reinterpret_cast<BaseFrame *>(lParam);
-				int line = (p->n_selLine == -1 ? 1 : p->n_selLine + 1);
-				HWND hwndOwner = GetParent(hWnd);
-				RECT rc, rcDlg, rcOwner;
-
-				GetWindowRect(hwndOwner, &rcOwner);
-				GetWindowRect(hWnd, &rcDlg);
-				CopyRect(&rc, &rcOwner);
-
-				// Offset the owner and dialog box rectangles so that right and bottom 
-				// values represent the width and height, and then offset the owner again 
-				// to discard space taken up by the dialog box. 
-
-				OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top);
-				OffsetRect(&rc, -rc.left, -rc.top);
-				OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom);
-
-				// The new position is the sum of half the remaining space and the owner's 
-				// original position. 
-
-				SetWindowPos(hWnd,
-					HWND_TOP,
-					rcOwner.left + (rc.right / 2),
-					rcOwner.top + (rc.bottom / 2),
-					0, 0,          // Ignores size arguments. 
-					SWP_NOSIZE);
-				SetForegroundWindow(hWnd);
-
-				if (GetDlgCtrlID((HWND)wParam) != IDC_CAPTION_GOTO_EDIT)
-				{
-					SetFocus(GetDlgItem(hWnd, IDC_CAPTION_GOTO_EDIT));
-					return FALSE;
-				}
-				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, std::to_wstring(line).c_str());
-
-				std::wstring s;
-				s = L"ÁÙ ¹øÈ£";
-				s += L"(1 - ";
-				s += std::to_wstring((p->vecBuff.size() ? p->vecBuff.size() : 1));
-				s += L"): ";
-				SetDlgItemText(hWnd, IDC_CAPTION_GOTO_STATIC, s.c_str());
-				return true;
-			}
-			case WM_COMMAND:
-			{
-				int wmId = LOWORD(wParam);
-				switch (wmId)
-				{
-				case IDOK:
-				{
-					int n = -1;
-					WCHAR str[255];
-					GetDlgItemText(hWnd, IDC_CAPTION_GOTO_EDIT, str, 255);
-					try
-					{
-						n = std::stoi(str);
-					}
-					catch (std::exception e) {}
-					return EndDialog(hWnd, n);
-					break;
-				}
-				case IDCANCEL:
-					return EndDialog(hWnd, 0);
-				}
-				break;
-			}
-			case WM_CLOSE:
-				EndDialog(hWnd, 0);
-				break;
-			}
-			return 0;
-		}, reinterpret_cast<LPARAM>(this));
-		bPauseKBHook = false;
-
-		if (vecBuff.size() <= goto_num - 1) break;
-		n_selLine = goto_num - 1;
-
-		bBypass = false;
-		strText = vecBuff[n_selLine];
-		typeNum = 0;
+	case IDM_HOOKER_OPTION:
+		ITH_OpenDialog(ITH_OPTION_DLG);
 		break;
-	}
 	default:
 		return BaseFrame::OnCommand(wParam, lParam);
 	}

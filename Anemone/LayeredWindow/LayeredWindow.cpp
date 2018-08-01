@@ -116,7 +116,7 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	switch (message)
 	{
 	case WM_USER + 100:
-		return OnFirstProc();
+		return OnFirstProc(hWnd);
 	case WM_USER + 200:
 		return OnKeyboardHookProc(wParam, lParam);
 	case WM_CREATE:
@@ -374,7 +374,7 @@ bool LayeredWindow::OnRender()
 	return true;
 }
 
-bool LayeredWindow::OnFirstProc()
+bool LayeredWindow::OnFirstProc(HWND hWnd)
 {
 	return false;
 }

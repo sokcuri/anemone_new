@@ -146,15 +146,24 @@
     <Filter Include="Header Files\Hook">
       <UniqueIdentifier>{b4412e1d-f218-44e6-90c3-e1b723286fd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\ITHVNR">
+      <UniqueIdentifier>{f442005a-7c79-45d4-93bb-938b8eeefc31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\anemone.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\third_party\ithvnr\resources\gui\icon1.ico">
+      <Filter>Resource Files\ITHVNR</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\Anemone.rc">
       <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\third_party\ithvnr\resources\gui\ITHVNR.rc">
+      <Filter>Resource Files\ITHVNR</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>
