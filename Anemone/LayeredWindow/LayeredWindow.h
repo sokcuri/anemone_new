@@ -58,6 +58,7 @@ public:
 	virtual bool OnDrawClipboard();
 	virtual bool OnDestroyClipboard();
 	virtual bool OnKeyboardHookProc(WPARAM wParam, LPARAM lParam);
+	virtual bool OnLastSentence(WCHAR *str);
 	virtual LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
@@ -76,7 +77,6 @@ protected:
 
 private:
 	void Initialize();
-	void StartEventCapture();
 	static LRESULT _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

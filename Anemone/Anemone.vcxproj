@@ -178,6 +178,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\third_party\ithvnr\resources\gui\resource.h" />
     <ClInclude Include="Frame\BaseFrame.h" />
     <ClInclude Include="Frame\CaptionFrame.h" />
     <ClInclude Include="Frame\ClipboardFrame.h" />

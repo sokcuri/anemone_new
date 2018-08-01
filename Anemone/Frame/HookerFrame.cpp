@@ -85,6 +85,14 @@ INT_PTR CALLBACK HookerFrame::HookerStickProc(HWND hWnd, UINT message, WPARAM wP
 	return 0;
 }
 
+bool HookerFrame::OnLastSentence(WCHAR *str)
+{
+	strText = str;
+	typeNum = 0;
+	bBypass = false;
+	return true;
+}
+
 bool HookerFrame::OnFirstProc(HWND hWnd)
 {
 	//CreateDialog(nullptr, MAKEINTRESOURCE(IDD_HOOKER_STICK), nullptr, (DLGPROC)HookerFrame::HookerStickProc);

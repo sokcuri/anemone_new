@@ -111,6 +111,11 @@ bool LayeredWindow::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
 	return false;
 }
 
+bool LayeredWindow::OnLastSentence(WCHAR *str)
+{
+	return false;
+}
+
 LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -119,6 +124,8 @@ LRESULT LayeredWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		return OnFirstProc(hWnd);
 	case WM_USER + 200:
 		return OnKeyboardHookProc(wParam, lParam);
+	case WM_USER + 300:
+		return OnLastSentence((WCHAR *)wParam);
 	case WM_CREATE:
 	{
 		PostMessage(hWnd, WM_USER + 100, 0, 0);
@@ -272,11 +279,11 @@ bool LayeredWindow::Create()
 {
 	if (lastWindow) return false;
 
-	std::wstring temp_class_name = std::to_wstring(GetTickCount());
-	wcex.lpszClassName = temp_class_name.c_str();
+	std::wstring class_name = L"AnemoneFrameWindow";
+	wcex.lpszClassName = class_name.c_str();
 	RegisterClassExW(&wcex);
 
-	handle = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_APPWINDOW | WS_EX_TOPMOST, temp_class_name.c_str(), title.c_str(), WS_POPUP,
+	handle = CreateWindowExW(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_APPWINDOW | WS_EX_TOPMOST, class_name.c_str(), title.c_str(), WS_POPUP,
 		position.x, position.y, size.cx, size.cy, nullptr, nullptr, nullptr, this);
 	
 	if (!handle)

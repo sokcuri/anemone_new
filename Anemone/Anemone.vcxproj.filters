@@ -111,6 +111,7 @@
     <ClInclude Include="Frame\HookerFrame.h">
       <Filter>Header Files\Frame</Filter>
     </ClInclude>
+    <ClInclude Include="..\third_party\ithvnr\resources\gui\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
