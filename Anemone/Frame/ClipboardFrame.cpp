@@ -11,10 +11,13 @@ ClipboardFrame::ClipboardFrame()
 	bFirst = true;
 	bStart = false;
 	typeNum = 0;
+
+	InitializeCriticalSection(&cs);
 }
 
 ClipboardFrame::~ClipboardFrame()
 {
+	DeleteCriticalSection(&cs);
 }
 
 bool ClipboardFrame::OnRender()
@@ -73,6 +76,8 @@ bool ClipboardFrame::OnChangeCbChain(WPARAM wParam, LPARAM lParam)
 
 bool ClipboardFrame::OnDrawClipboard()
 {
+	EnterCriticalSection(&cs);
+
 	bool success = false;
 	int nRetryCount = 0;
 
@@ -91,17 +96,21 @@ bool ClipboardFrame::OnDrawClipboard()
 	{
 		auto text = fmt::format(L"cannot open clipboard : %d\n", GetLastError());
 		OutputDebugString(text.c_str());
+		LeaveCriticalSection(&cs);
 		return false;
 	}
 
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
 	{
 		CloseClipboard();
+		LeaveCriticalSection(&cs);
 		return false;
 	}
 
 	auto hglb = GetClipboardData(CF_UNICODETEXT);
+	if (!hglb) return false;
 	auto pchData = reinterpret_cast<wchar_t *>(GlobalLock(hglb));
+	if (!pchData) return false;
 	if (bFirst)
 	{
 		bFirst = false;
@@ -114,6 +123,8 @@ bool ClipboardFrame::OnDrawClipboard()
 	typeNum = 0;
 	GlobalUnlock(hglb);
 	CloseClipboard();
+
+	LeaveCriticalSection(&cs);
 	return true;
 }
 

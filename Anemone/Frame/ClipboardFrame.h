@@ -37,6 +37,8 @@ class ClipboardFrame : public BaseFrame
 
 	time_point lastTime;
 
+	CRITICAL_SECTION cs;
+
 public:
 	ClipboardFrame();
 	~ClipboardFrame();
