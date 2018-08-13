@@ -43,15 +43,10 @@ bool CaptionFrame::BrowseFile()
 	ofn.lpstrInitialDir = NULL;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-
-	// test
-
-	// test end
-
 	if (GetOpenFileName(&ofn) == TRUE)
 	{
 		FILE *fp;
-		if (_wfopen_s(&fp, ofn.lpstrFile, L"r") != 0)
+		if (_wfopen_s(&fp, ofn.lpstrFile, L"rb") != 0)
 		{
 			MessageBox(0, L"파일을 열 수 없음", 0, 0);
 			return false;
@@ -60,7 +55,9 @@ bool CaptionFrame::BrowseFile()
 		long fsize = ftell(fp);
 		fseek(fp, 0, SEEK_SET);  //same as rewind(f);
 
+		wchar_t *wtext = 0;
 		char *text = (char *)malloc(fsize + 1);
+		char *c = text;
 		fread(text, fsize, 1, fp);
 		fclose(fp);
 
@@ -73,40 +70,64 @@ bool CaptionFrame::BrowseFile()
 			text, strlen(text),
 			nullptr, nullptr, nullptr,
 			UNKNOWN_ENCODING,
-			UNKNOWN_LANGUAGE,
-			CompactEncDet::WEB_CORPUS,
+			Language::KOREAN,
+			CompactEncDet::QUERY_CORPUS,
 			false,
 			&bytes_consumed,
 			&is_reliable);
 
-		OutputDebugString(L"Encoding: ");
-		OutputDebugString(std::to_wstring(encoding).c_str());
-		OutputDebugString(L"\n");
-
-		free(text);
-
-		if (_wfopen_s(&fp, ofn.lpstrFile, L"rt,ccs=UTF-8") != 0)
+		if (fsize <= 2)
 		{
-			MessageBox(0, L"파일을 열 수 없음", 0, 0);
-			return false;
+			if (c[0] == 0xFE && c[1] == 0xFF)
+				c += 2;
+			else if (c[0] == 0xFF && c[1] == 0xFE)
+				c += 2;
 		}
-		std::wstring filename = ofn.lpstrFile;
+		else
+		{
+			if (memcmp(c, "\xFF\xFE\x00\x00", 4))
+				c += 4;
+			else if (memcmp(c, "\x00\x00\xFE\xFF", 4))
+				c += 4;
+			else if (memcmp(c, "\xFE\xFF", 2))
+				c += 2;
+			else if (memcmp(c, "\xFF\xFE", 2))
+				c += 2;
+		}
 
-		WCHAR buff[2048];
+		int SourceEncoding = CP_ACP;
+		if (encoding == Encoding::UTF8)
+			SourceEncoding = CP_UTF8;
+		else if (encoding == Encoding::KOREAN_EUC_KR)
+			SourceEncoding = 949;
+		else if (encoding == Encoding::JAPANESE_CP932 || Encoding::JAPANESE_SHIFT_JIS || Encoding::JAPANESE_EUC_JP || Encoding::JAPANESE_JIS)
+			SourceEncoding = 932;
+		else if (encoding == Encoding::KDDI_ISO_2022_JP || encoding == Encoding::SOFTBANK_ISO_2022_JP)
+			SourceEncoding = 50222;
+		else if (encoding == Encoding::ISO_2022_KR)
+			SourceEncoding = 50225;
+		int nLen = MultiByteToWideChar(SourceEncoding, 0, c, strlen(c), NULL, NULL);
+		wtext = (wchar_t *)malloc((nLen + 1) * 2);
+		MultiByteToWideChar(SourceEncoding, 0, c, strlen(c), wtext, nLen);
+		wtext[nLen] = 0;
+
+		std::wstringstream wss(wtext);
+		free(text);
+		free(wtext);
+
 		std::wstring s;
-
 		vecBuff.clear();
 
-		while (fgetws(buff, 2048, fp))
+		while (std::getline(wss, s))
 		{
-			s = buff;
 			s.erase(0, s.find_first_not_of(' '));
 			s.erase(s.find_last_not_of(' ') + 1);
-			if (s[0] == '\n' || s[0] == '\r' && s[1] == '\n') continue;
+			if (s[0] == L'\n' || s[0] == L'\r' && s[1] == L'\n' || s[0] == L'\r' && s[1] == 0) continue;
 			if (!s.length()) continue;
 			vecBuff.push_back(s);
 		}
 
+		std::wstring filename = ofn.lpstrFile;
 		filename = filename.substr(filename.rfind('\\') + 1);
 		if (vecBuff.size())
 		{
@@ -115,7 +136,6 @@ bool CaptionFrame::BrowseFile()
 			typeNum = 0;
 			bBypass = true;
 		}
-		fclose(fp);
 	}
 	return true;
 }
@@ -324,6 +344,6 @@ bool CaptionFrame::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
-	return false;
+	return true;
 }
 
