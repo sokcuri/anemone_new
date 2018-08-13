@@ -320,7 +320,7 @@ bool CaptionFrame::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
 
 		if (pHookKey->vkCode == VK_PRIOR)
 		{
-			if (!n_selLine || n_selLine == -1) break;
+			if (!n_selLine || n_selLine == -1) return true;
 			bBypass = false;
 			strText = vecBuff[--n_selLine];
 			typeNum = 0;
@@ -337,13 +337,13 @@ bool CaptionFrame::OnKeyboardHookProc(WPARAM wParam, LPARAM lParam)
 			}
 
 			bBypass = false;
-			if (n_selLine + 1 == vecBuff.size()) break;
+			if (n_selLine + 1 == vecBuff.size()) return true;
 			strText = vecBuff[++n_selLine];
 			typeNum = 0;
 			return true;
 		}
 		break;
 	}
-	return true;
+	return false;
 }
 
