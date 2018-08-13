@@ -73,8 +73,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
     <IntDir>Build\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)Dist\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -83,8 +81,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\third_party\skia\lib</LibraryPath>
     <IntDir>Build\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)Dist\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -101,12 +97,13 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;skia.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\third_party\skia\lib;$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>echo | set /p dummyName=#define GIT_CUR_COMMIT &gt;  gitparams.h
@@ -142,6 +139,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\third_party\skia\include;..\third_party\include\atlastext;..\third_party\skia\include\c;..\third_party\skia\include\codec;..\third_party\skia\include\config;..\third_party\skia\include\core;..\third_party\skia\include\effects;..\third_party\skia\include\encode;..\third_party\skia\include\gpu;..\third_party\skia\include\pathops;..\third_party\skia\include\ports;..\third_party\skia\include\private;..\third_party\skia\include\svg;..\third_party\skia\include\utils;..\third_party\skia\include\views;..\third_party\skia\src\core;..\third_party;.\Frame;.\LayeredWindow;.\Utility;.\Hook;.\Resource;$(ProjectDir)\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,7 +147,7 @@ git rev-parse --abbrev-ref HEAD &gt;&gt;  gitparams.h</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;skia.lib;ntdll.lib;version.lib;comctl32.lib;ithvnr.lib;vnrhost.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\third_party\skia\lib;$(SolutionDir)Dist\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>echo | set /p dummyName=#define GIT_CUR_COMMIT &gt;  gitparams.h
