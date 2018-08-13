@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CaptionFrame.h"
+#include "compact_enc_det/compact_enc_det.h"
 
 
 CaptionFrame::CaptionFrame()
@@ -17,7 +18,7 @@ CaptionFrame::~CaptionFrame()
 {
 }
 
-bool CaptionFrame::OnFirstProc()
+bool CaptionFrame::OnFirstProc(HWND hWnd)
 {
 	BrowseFile();
 	return true;
@@ -42,9 +43,48 @@ bool CaptionFrame::BrowseFile()
 	ofn.lpstrInitialDir = NULL;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
+
+	// test
+
+	// test end
+
 	if (GetOpenFileName(&ofn) == TRUE)
 	{
 		FILE *fp;
+		if (_wfopen_s(&fp, ofn.lpstrFile, L"r") != 0)
+		{
+			MessageBox(0, L"파일을 열 수 없음", 0, 0);
+			return false;
+		}
+		fseek(fp, 0, SEEK_END);
+		long fsize = ftell(fp);
+		fseek(fp, 0, SEEK_SET);  //same as rewind(f);
+
+		char *text = (char *)malloc(fsize + 1);
+		fread(text, fsize, 1, fp);
+		fclose(fp);
+
+		text[fsize] = 0;
+
+		bool is_reliable;
+		int bytes_consumed;
+
+		Encoding encoding = CompactEncDet::DetectEncoding(
+			text, strlen(text),
+			nullptr, nullptr, nullptr,
+			UNKNOWN_ENCODING,
+			UNKNOWN_LANGUAGE,
+			CompactEncDet::WEB_CORPUS,
+			false,
+			&bytes_consumed,
+			&is_reliable);
+
+		OutputDebugString(L"Encoding: ");
+		OutputDebugString(std::to_wstring(encoding).c_str());
+		OutputDebugString(L"\n");
+
+		free(text);
+
 		if (_wfopen_s(&fp, ofn.lpstrFile, L"rt,ccs=UTF-8") != 0)
 		{
 			MessageBox(0, L"파일을 열 수 없음", 0, 0);

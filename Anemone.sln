@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Anemone", "Anemone\Anemone.vcxproj", "{596FF202-7D56-44A5-8497-D12FCB7E677C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3ABAEB6B-AC21-462B-B95D-509F82448820} = {3ABAEB6B-AC21-462B-B95D-509F82448820}
+		{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6} = {20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ITHVNR", "ITHVNR", "{5959FF42-E1FD-4378-A204-608D2BBD447B}"
@@ -22,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VNRHook", "third_party\ithv
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VNRHost", "third_party\ithvnr\VNRHost.vcxproj", "{C9B7D82F-4548-41CE-8A0E-412C3EE28E8F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compact_enc_det", "third_party\compact_enc_det\compact_enc_det.vcxproj", "{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +48,10 @@ Global
 		{C9B7D82F-4548-41CE-8A0E-412C3EE28E8F}.Debug|x86.Build.0 = Debug|Win32
 		{C9B7D82F-4548-41CE-8A0E-412C3EE28E8F}.Release|x86.ActiveCfg = Release|Win32
 		{C9B7D82F-4548-41CE-8A0E-412C3EE28E8F}.Release|x86.Build.0 = Release|Win32
+		{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}.Debug|x86.ActiveCfg = Debug|Win32
+		{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}.Debug|x86.Build.0 = Debug|Win32
+		{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}.Release|x86.ActiveCfg = Release|Win32
+		{20857974-1AE4-4FE9-8C37-0B4A63A7E0C6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

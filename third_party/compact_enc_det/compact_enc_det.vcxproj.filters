@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header File">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source File">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source File\Util">
+      <UniqueIdentifier>{b953aad4-3987-49d1-a6b7-a95748f3ab18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source File\Util\Encodings">
+      <UniqueIdentifier>{8f37935f-d8cc-4bad-8664-f207eb053313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source File\Util\Languages">
+      <UniqueIdentifier>{59f9aff7-a619-423d-ab5a-20d930961b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header File\Util">
+      <UniqueIdentifier>{89974876-2311-4416-a3da-5dc433a0e313}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header File\Util\Encodings">
+      <UniqueIdentifier>{47aa4080-8922-43ea-aeb6-280e0c86baaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header File\Util\Languages">
+      <UniqueIdentifier>{57acac74-f9ae-4ce1-a0cc-c281e398d67c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="compact_enc_det_hint_code.h">
+      <Filter>Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="compact_enc_det.h">
+      <Filter>Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="compact_enc_det_generated_tables.h">
+      <Filter>Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="compact_enc_det_generated_tables2.h">
+      <Filter>Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="util\logging.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\port.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\string_util.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\varsetter.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\basictypes.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\case_insensitive_hash.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\commandlineflags.h">
+      <Filter>Header File\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\encodings\encodings.pb.h">
+      <Filter>Header File\Util\Encodings</Filter>
+    </ClInclude>
+    <ClInclude Include="util\encodings\encodings.h">
+      <Filter>Header File\Util\Encodings</Filter>
+    </ClInclude>
+    <ClInclude Include="util\languages\languages.pb.h">
+      <Filter>Header File\Util\Languages</Filter>
+    </ClInclude>
+    <ClInclude Include="util\languages\languages.h">
+      <Filter>Header File\Util\Languages</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="compact_enc_det_hint_code.cc">
+      <Filter>Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="compact_enc_det.cc">
+      <Filter>Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="util\languages\languages.cc">
+      <Filter>Source File\Util\Languages</Filter>
+    </ClCompile>
+    <ClCompile Include="util\encodings\encodings.cc">
+      <Filter>Source File\Util\Encodings</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
